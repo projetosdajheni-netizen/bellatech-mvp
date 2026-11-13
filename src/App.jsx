@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReviewPanel from './ReviewPanel.jsx';
 
 export default function App() {
   const [area, setArea] = useState('');
@@ -57,6 +58,7 @@ export default function App() {
         <p>Status: aguardando revisão humana. Nenhuma atividade foi publicada.</p>
       </div>}
     </section>
+    <ReviewPanel access={access} />
     <footer>Projeto acadêmico em desenvolvimento • Não utilize dados pessoais • Nenhuma promessa de contratação ou fluência</footer>
   </main>;
 }
