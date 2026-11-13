@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] }),
       signal: AbortSignal.timeout(20000)
     });
-    if (!ai.ok) throw new Error(ai.status === 429 ? 'AI_QUOTA' : 'AI_REQUEST_FAILED');
+    if (!ai.ok) throw new Error(ai.status === 429 ? 'AI_QUOTA' : 'AI_HTTP_' + ai.status);
     const response = await ai.json();
     const generated = response?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n').trim();
     if (!generated || generated.length > 14000) throw new Error('AI_INVALID_RESPONSE');
