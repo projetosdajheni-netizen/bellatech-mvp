@@ -2,7 +2,34 @@
 import { isAuthorized, preparePrivateResponse } from '../lib/privateAuth.js';
 import { db, logExecution } from '../lib/bellatechDb.js';
 import { getInterviewQuestions } from '../lib/supabaseQuestions.js';
-const MODEL = 'gemini-2.5-flash-lite';
+// Modelo atual com suporte ao nivel gratuito publicado pelo Google.
+// A possibilidade de uso deve ser confirmada na conta antes de realizar gerações.
+const MODEL = 'gemini-3.5-flash-lite';
+
+// Nunca preservar mensagens brutas do provedor: podem conter dados de solicitação.
+// A classificação abaixo mantém somente campos de diagnóstico em lista de permissão.
+function safeIdentifier(value) {
+  return typeof value === 'string' && /^[A-Z][A-Z0-9_]{1,63}$/.test(value)
+    ? value : 'UNSPECIFIED';
+}
+async function classifyGeminiError(response) {
+  let payload = null;
+  try { payload = await response.json(); } catch { /* resposta não JSON */ }
+  const status = safeIdentifier(payload?.error?.status);
+  const reason = safeIdentifier(payload?.error?.details?.find(
+    item => item && typeof item.reason === 'string'
+  )?.reason);
+  const diagnostic = {
+    provider: 'gemini',
+    model: MODEL,
+    http_status: response.status,
+    provider_status: status,
+    provider_reason: reason
+  };
+  const err = new Error(response.status === 429 ? 'AI_QUOTA' : 'AI_HTTP_' + response.status);
+  err.diagnostic = diagnostic;
+  return err;
+}
 
 export default async function handler(req, res) {
   preparePrivateResponse(res, 'POST');
@@ -55,7 +82,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] }),
       signal: AbortSignal.timeout(20000)
     });
-    if (!ai.ok) throw new Error(ai.status === 429 ? 'AI_QUOTA' : 'AI_HTTP_' + ai.status);
+    if (!ai.ok) throw await classifyGeminiError(ai);
     const response = await ai.json();
     const generated = response?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n').trim();
     if (!generated || generated.length > 14000) throw new Error('AI_INVALID_RESPONSE');
@@ -66,7 +93,14 @@ export default async function handler(req, res) {
       message: 'Atividade registrada. Aguarde aprovação humana.' });
   } catch (error) {
     if (activityId) {
-      try { await logExecution(activityId, 'error', {}, String(error.message || 'UNKNOWN').slice(0,60)); }
+      try {
+        // Guarda apenas status HTTP e códigos canônicos controlados, nunca o
+        // corpo bruto do Google, prompt, token ou credenciais da requisição.
+        await logExecution(
+          activityId, 'error', error.diagnostic || { provider: 'internal', model: MODEL },
+          String(error.message || 'UNKNOWN').replace(/[^A-Z0-9_]/g, '_').slice(0,60)
+        );
+      }
       catch { console.error('Erro ao registrar execução da BellaTech.'); }
     }
     return res.status(error?.message === 'AI_QUOTA' ? 429 : 503).json({
