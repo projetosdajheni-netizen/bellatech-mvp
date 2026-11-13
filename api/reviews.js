@@ -27,6 +27,20 @@ export default async function handler(req, res) {
     if (activity.length !== 1 || !activity[0].generated_content || activity[0].review_status !== 'pending') {
       return res.status(409).json({ error: 'Atividade indisponível para revisão.' });
     }
+    if (round === 2) {
+      const earlier = await db('human_reviews', { query: {
+        select: 'evaluation_round', activity_id: 'eq.' + activityId
+      } });
+      const logs = await db('execution_logs', { query: {
+        select: 'execution_details', activity_id: 'eq.' + activityId
+      } });
+      if (earlier.filter(x => x.evaluation_round === 1).length !== 3 ||
+          !logs.some(x => x.execution_details?.kind === 'human_correction')) {
+        return res.status(409).json({
+          error: 'Conclua as 3 avaliações da rodada 1 e registre a correção antes da rodada 2.'
+        });
+      }
+    }
     await db('human_reviews', { method: 'POST', prefer: 'return=minimal',
       body: {
         activity_id: activityId, evaluation_round: round,
