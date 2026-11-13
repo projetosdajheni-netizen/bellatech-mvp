@@ -10,11 +10,13 @@ export default function ReviewPanel({ access }) {
   const [approved, setApproved] = useState('');
   const [notes, setNotes] = useState('');
   const [message, setMessage] = useState('');
+  const [correctedText, setCorrectedText] = useState('');
+  const [changeNotes, setChangeNotes] = useState('');
   const [working, setWorking] = useState(false);
   const chosen = items.find(x => x.id === selected);
 
   async function fetchReviews() {
-    setMessage(''); setWorking(true);
+    setWorking(true);
     try {
       const response = await fetch('/api/reviews', {
         headers: { Authorization: 'Bearer ' + access }
@@ -96,6 +98,34 @@ export default function ReviewPanel({ access }) {
           rows={4} minLength={3} maxLength={800} required
           placeholder="Indique acertos, problemas e correções necessárias."/>
         <button disabled={working || approved === ''}>Registrar avaliação privada</button>
+      </form>}
+      {chosen?.review_status === 'pending' && chosen.generated_content && <form onSubmit={async e => {
+        e.preventDefault(); setWorking(true); setMessage('');
+        try {
+          const response = await fetch('/api/revise', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', Authorization:'Bearer ' + access },
+            body: JSON.stringify({ activityId: chosen.id, correctedText, changeNotes })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error);
+          setMessage('Correção registrada. A rodada 2 está liberada para esta atividade.');
+          setCorrectedText(''); setChangeNotes('');
+          await fetchReviews();
+        } catch (err) { setMessage(err.message || 'Falha ao registrar correção.'); }
+        finally { setWorking(false); }
+      }}>
+        <h3>Correção entre as rodadas</h3>
+        <p>Preencha somente depois das três avaliações da rodada 1. Registre mudanças observáveis antes da rodada 2.</p>
+        <label htmlFor="correctedText">Versão corrigida da atividade</label>
+        <textarea id="correctedText" rows={8} value={correctedText} onChange={e => setCorrectedText(e.target.value)}
+          placeholder="Cole a atividade completa corrigida após o feedback da primeira rodada." required minLength={30} maxLength={14000} />
+        <label htmlFor="changeNotes">O que foi corrigido e por quê?</label>
+        <textarea id="changeNotes" rows={3} value={changeNotes} onChange={e => setChangeNotes(e.target.value)}
+          placeholder="Descreva as alterações baseadas no feedback das avaliadoras." required minLength={8} maxLength={800} />
+        <button disabled={working || correctedText.length < 30 || changeNotes.length < 8}>
+          Registrar correção privada
+        </button>
       </form>}
     </>}
     {message && <p role="status">{message}</p>}
