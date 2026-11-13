@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "prebuild": "node scripts/check-db.mjs"
+    "prebuild": "node scripts/check-db.mjs && node scripts/smoke-generate.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
