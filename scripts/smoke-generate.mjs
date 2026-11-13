@@ -3,7 +3,7 @@
 import generate from '../api/generate.js';
 import { db } from '../lib/bellatechDb.js';
 
-const name = 'Teste Interno BellaTech';
+const name = 'Teste Interno BellaTech 2';
 if (process.env.BELLATECH_SMOKE_ONCE !== 'true') {
   console.log('BELLA_SMOKE_SKIPPED: modo de teste único desligado.');
   process.exit(0);
@@ -37,6 +37,16 @@ try {
   };
   await generate(req, res);
   if (code !== 202 || body?.reviewStatus !== 'pending') {
+    const related = await db('activities', { query: { select: 'id', area: 'eq.' + name, limit: '1' } });
+    if (related[0]?.id) {
+      const logs = await db('execution_logs', { query: {
+        select: 'error_category,execution_status',
+        activity_id: 'eq.' + related[0].id,
+        order: 'created_at.desc', limit: '3'
+      } });
+      const failure = logs.find(x => x.execution_status === 'error');
+      console.error('BELLA_SMOKE_DIAGNOSTIC: ' + (failure?.error_category || 'NO_ERROR_CATEGORY'));
+    }
     console.error('BELLA_SMOKE_NOT_APPROVED: HTTP ' + code + '; category ' +
       (body?.code || 'GENERATION_FAILED'));
     process.exit(1);
