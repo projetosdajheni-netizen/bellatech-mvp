@@ -5,7 +5,7 @@ if (!key) {
   process.exitCode = 1;
 } else {
   try {
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite', {
       headers: { 'x-goog-api-key': key },
       signal: AbortSignal.timeout(10000)
     });
