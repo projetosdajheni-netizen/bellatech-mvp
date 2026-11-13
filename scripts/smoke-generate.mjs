@@ -3,7 +3,7 @@
 import generate from '../api/generate.js';
 import { db } from '../lib/bellatechDb.js';
 
-const name = 'Teste Interno BellaTech 2';
+const name = 'Teste Interno BellaTech 3';
 if (process.env.BELLATECH_SMOKE_ONCE !== 'true') {
   console.log('BELLA_SMOKE_SKIPPED: modo de teste único desligado.');
   process.exit(0);
