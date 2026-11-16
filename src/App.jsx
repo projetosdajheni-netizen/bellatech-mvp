@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReviewPanel from './ReviewPanel.jsx';
 
 // Conteúdo demonstrativo criado para o piloto; não representa atividades aprovadas no banco.
@@ -95,6 +95,23 @@ export default function App() {
   const [path,setPath]=useState('fundamentos');
   const [level,setLevel] = useState('zero');
   const [stage,setStage] = useState('home');
+  const previousStages = useRef([]);
+  const currentStage = useRef('home');
+  const skipHistory = useRef(false);
+  useEffect(()=>{
+    if(stage===currentStage.current)return;
+    if(skipHistory.current){skipHistory.current=false;}
+    else if(stage==='home'){previousStages.current=[];}
+    else {previousStages.current.push(currentStage.current);}
+    currentStage.current=stage;
+  },[stage]);
+  function goToPreviousPage(){
+    const previous=previousStages.current.pop();
+    if(!previous)return;
+    skipHistory.current=true;
+    setStage(previous);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
   const [guidedIndex,setGuidedIndex] = useState(0);
   const [unlocked,setUnlocked]=useState(0);
   const [moduleIndex,setModuleIndex]=useState(0);
@@ -135,7 +152,7 @@ export default function App() {
   return <main className="container">
     <header className="brand-header"><a className="brand-home-link" href="/" aria-label="BellaTech — voltar à página inicial"><div className="logo" aria-hidden="true">✦</div><div className="brand-copy"><strong className="brand-name">Bella<span className="brand-tech">Tech</span></strong><small className="brand-subtitle">Desenvolvimento profissional e empregabilidade</small><span className="brand-audience">Para mulheres LGBTQIAPN+</span></div></a></header>
     {stage==='home' && <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><button type="button" className="hero-cta" onClick={()=>{setStage("intro");window.scrollTo({top:0,behavior:"smooth"});}}>Começar treino gratuito <span aria-hidden="true">→</span></button></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
-    {stage!=='home' && <div className="journey-navigation"><button type="button" className="secondary" onClick={()=>{restart();setStage("home");window.scrollTo({top:0,behavior:"smooth"});}}>← Voltar ao início</button><span>Ambiente de aprendizagem BellaTech</span></div>}
+    {stage!=='home' && <div className="journey-navigation"><div className="journey-navigation-actions"><button type="button" className="secondary" onClick={goToPreviousPage} disabled={previousStages.current.length===0}>← Página anterior</button><button type="button" className="secondary" onClick={()=>{restart();setStage("home");window.scrollTo({top:0,behavior:"smooth"});}}>⌂ Voltar ao início</button></div><span>Ambiente de aprendizagem BellaTech</span></div>}
     {stage!=='home' && <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
       {(stage==='intro'||stage==='paths') && <div className="journey-intro"><p className="eyebrow">INGLÊS PROFISSIONAL</p><h2>Encontre sua trilha</h2><p>Conte seu objetivo e escolha por onde começar. A sugestão é inicial e não representa um teste de proficiência.</p></div>}
       {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setStage('paths')}}>
