@@ -52,20 +52,3 @@ header{gap:16px;margin-bottom:22px}.logo{background:transparent;color:#ef5fbc;fo
 .hero::before{left:15%;opacity:.38}
 .hero::after{background:linear-gradient(90deg,rgba(53,20,78,.97),rgba(53,20,78,.82))}
 }
-
-/* Oculta o botão "Entrar" que está impresso na imagem (não é funcional).
-   A faixa decorativa cobre apenas o canto superior direito do banner. */
-.hero::after{
- background-image:
- linear-gradient(90deg,#35144e 0%,#35144e 35%,rgba(53,20,78,.95) 44%,rgba(53,20,78,.40) 66%,rgba(53,20,78,.06) 100%),
- linear-gradient(115deg,#a93266 0%,#b65e38 38%,#bd902b 62%,#168f75 100%);
- background-size:100% 100%,235px 94px;
- background-position:center,right top;
- background-repeat:no-repeat;
-}
-@media(max-width:800px){
-.hero::after{background-image:linear-gradient(90deg,rgba(53,20,78,.98),rgba(53,20,78,.90) 52%,rgba(53,20,78,.57)),linear-gradient(115deg,#a93266,#b65e38 40%,#168f75);background-size:100% 100%,235px 94px}
-}
-@media(max-width:480px){
-.hero::after{background-image:linear-gradient(90deg,rgba(53,20,78,.97),rgba(53,20,78,.82)),linear-gradient(115deg,#a93266,#b65e38 40%,#168f75);background-size:100% 100%,235px 94px}
-}
