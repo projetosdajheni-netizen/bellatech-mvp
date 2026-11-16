@@ -91,3 +91,16 @@ header.brand-header > a.brand-home-link .brand-name{display:block;white-space:no
 header.brand-header > a.brand-home-link .brand-subtitle{color:#756784}
 header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
 @media(max-width:480px){header.brand-header > a.brand-home-link{gap:10px}}
+
+
+/* Jornada de aprendizagem: cartões simples, legíveis no celular */
+.journey-list{display:grid;gap:11px;margin:22px 0 4px}
+.journey-step{display:flex;align-items:center;gap:14px;border:1px solid #e6d8ee;border-radius:15px;padding:15px;background:#fcf9ff}
+.journey-number{display:grid;place-items:center;flex:0 0 42px;height:42px;border-radius:50%;background:#f0dcf9;color:#69258d;font-weight:800}
+.journey-step strong{display:block;color:#512280;font-size:16px}
+.journey-step p{margin:5px 0 0;font-size:14px;line-height:1.45}
+.learning-card{border:1px solid #e9d9f2;border-radius:14px;background:#f8f0fc;padding:16px 18px;margin:15px 0}
+.learning-card strong{display:block;color:#552386;font-size:17px}
+.learning-card p{margin:10px 0;font-size:16px}
+.learning-card small{color:#685575}
+@media(max-width:600px){.journey-step{padding:12px;gap:11px}.journey-number{flex-basis:36px;height:36px}.learning-card{padding:14px}.training .actions{flex-wrap:wrap}.training .actions button{min-width:0;flex:1 1 160px}}
