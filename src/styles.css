@@ -143,3 +143,28 @@ header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
 .module-final p{margin:8px 0 12px}
 .module-final span{color:#695877;font-weight:650}
 @media(max-width:480px){.module-tile{grid-template-columns:43px minmax(0,1fr);padding:13px;gap:10px}.module-icon{width:42px;height:42px}.module-tile button{grid-column:1/-1;width:100%}}
+
+/* Capas ilustradas e cartões de módulos profissionais */
+.module-map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:22px 0}
+.module-map .module-tile{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden;border:1px solid #e6d8ee;border-radius:19px;background:#fff;box-shadow:0 8px 24px rgba(65,30,95,.07)}
+.module-map .module-cover{position:relative;width:100%;aspect-ratio:2/1;overflow:hidden;background:linear-gradient(125deg,#683a9b,#c26ab0)}
+.module-map .module-cover svg{display:block;width:100%;height:100%}
+.module-map .module-cover-1{background:linear-gradient(125deg,#5b3d98,#6d99c7)}
+.module-map .module-cover-2{background:linear-gradient(125deg,#8c4b99,#d887ad)}
+.module-map .module-cover-3{background:linear-gradient(125deg,#573e94,#b16db9)}
+.module-map .module-cover.cover-locked svg{filter:grayscale(.65);opacity:.48}
+.module-cover-lock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#ffffffed;font-size:25px;box-shadow:0 4px 18px #26153933}
+.module-map .module-details{padding:18px 18px 10px;flex:1}
+.module-map .module-details strong{font-size:19px;line-height:1.35;margin-top:10px}
+.module-map .module-details p{font-size:14px;line-height:1.5;margin:9px 0}
+.module-map .module-details small{display:block;font-size:12px}
+.module-status{display:inline-block;border-radius:20px;padding:6px 11px;font-size:12px;font-weight:800}
+.status-done{background:#e5f5eb;color:#256344}
+.status-ready{background:#f6d9ec;color:#852663}
+.status-locked{background:#eae6ef;color:#655b70}
+.module-map .module-card-action{padding:8px 18px 18px}
+.module-map .module-card-action button{width:100%;min-height:47px}
+.module-map .module-card-action button:disabled{background:#ebe7f0;color:#736a7c;opacity:1}
+.module-map .module-locked{background:#faf9fb}
+.module-map .module-locked .module-details strong{color:#6b6471}
+@media(max-width:700px){.module-map{grid-template-columns:1fr;gap:16px}.module-map .module-cover{aspect-ratio:2.3/1}}
