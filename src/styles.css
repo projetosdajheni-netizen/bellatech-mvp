@@ -52,3 +52,14 @@ header{gap:16px;margin-bottom:22px}.logo{background:transparent;color:#ef5fbc;fo
 .hero::before{left:15%;opacity:.38}
 .hero::after{background:linear-gradient(90deg,rgba(53,20,78,.97),rgba(53,20,78,.82))}
 }
+
+
+/* Identidade BellaTech: marca única, tipografia limpa e detalhe arco-íris */
+.brand-header{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+.brand-header .logo{font-size:26px;line-height:1;color:#d64aa7;background:transparent;flex-shrink:0}
+.brand-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:2px}
+.brand-header .brand-name{display:block;color:#50217b;font-size:clamp(28px,3vw,36px);font-weight:800;line-height:1.05;letter-spacing:-1.1px;white-space:nowrap}
+.brand-tech{background:linear-gradient(100deg,#dc526c 5%,#e7a13f 28%,#2b9b77 53%,#447ec4 76%,#9455b9 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.brand-header .brand-subtitle{display:block;font-size:13px;line-height:1.35;color:#756784;font-weight:500}
+.brand-audience{display:block;color:#66348d;font-size:13px;line-height:1.35;font-weight:700}
+@media(max-width:480px){.brand-header{gap:10px}.brand-header .logo{font-size:23px}.brand-header .brand-name{font-size:30px}.brand-header .brand-subtitle,.brand-audience{font-size:12px}}
