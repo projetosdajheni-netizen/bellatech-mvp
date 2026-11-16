@@ -30,6 +30,20 @@ const levels = {zero:'Começando do zero',iniciante:'Iniciante',basico:'Básico'
 const areas = {geral:'Qualquer área',tecnologia:'Tecnologia',atendimento:'Atendimento',administracao:'Administração'};
 const goals={entrevista:'Preparar-me para entrevistas',trabalho:'Comunicar-me no trabalho',carreira:'Desenvolver minha carreira'};
 const paths=[{id:'fundamentos',title:'Fundamentos do inglês profissional'},{id:'entrevista',title:'Inglês para entrevistas'},{id:'trabalho',title:'Comunicação no trabalho'}];
+const learningModules=[
+ {title:'Apresente-se em inglês',desc:'Construa sua apresentação profissional.',items:[
+  {en:'My name is Ana.',pt:'Meu nome é Ana.',q:'Complete: My name ___ Ana.',opts:['am','is','are'],correct:1,why:'Com “my name”, usamos “is”.'},
+  {en:'I am learning English.',pt:'Estou aprendendo inglês.',q:'Qual frase significa “Estou aprendendo inglês”?',opts:['I is learning English.','I am learning English.','I are English.'],correct:1,why:'Com “I”, usamos “am”.'}]},
+ {title:'Vocabulário de tecnologia',desc:'Reconheça termos comuns em tecnologia.',items:[
+  {en:'I work with a team.',pt:'Eu trabalho com uma equipe.',q:'O que significa “team”?',opts:['Equipe','Computador','Entrevista'],correct:0,why:'Team significa equipe.'},
+  {en:'I am interested in software.',pt:'Tenho interesse em software.',q:'Qual expressão indica interesse?',opts:['I am interested in...','I am late for...','I do not know...'],correct:0,why:'“I am interested in” significa “Tenho interesse em”.'}]},
+ {title:'Fale sobre suas habilidades',desc:'Comunique competências e interesses.',items:[
+  {en:'I can solve problems.',pt:'Eu consigo resolver problemas.',q:'Qual frase expressa uma habilidade?',opts:['I can solve problems.','I am a problem.','I have a problem yesterday.'],correct:0,why:'“I can” é usado para indicar algo que você consegue fazer.'},
+  {en:'I like learning new technologies.',pt:'Eu gosto de aprender novas tecnologias.',q:'Complete: I ___ learning new technologies.',opts:['likes','like','liking'],correct:1,why:'Com “I”, usamos “like” nessa frase.'}]},
+ {title:'Minha primeira entrevista',desc:'Pratique respostas de uma conversa profissional.',items:[
+  {en:'Tell me about yourself.',pt:'Fale um pouco sobre você.',q:'Qual resposta apresenta você?',opts:['My name is Ana. I am learning English.','I no name English.','Technology is name.'],correct:0,why:'Uma apresentação pode começar com seu nome e o que está aprendendo.'},
+  {en:'Why are you interested in technology?',pt:'Por que você tem interesse em tecnologia?',q:'Qual resposta demonstra interesse profissional?',opts:['I never want to learn.','I want to learn and develop my skills.','I am not interested.'],correct:1,why:'A resposta expressa interesse em aprender e desenvolver habilidades.'}]}
+];
 function AudioControls({en,pt}) {
  const [slow,setSlow]=useState(false);const [notice,setNotice]=useState('');
  function speak(t,lang){
@@ -69,6 +83,11 @@ export default function App() {
   const [level,setLevel] = useState('zero');
   const [stage,setStage] = useState('intro');
   const [guidedIndex,setGuidedIndex] = useState(0);
+  const [unlocked,setUnlocked]=useState(0);
+  const [moduleIndex,setModuleIndex]=useState(0);
+  const [activityIndex,setActivityIndex]=useState(0);
+  const [moduleChoice,setModuleChoice]=useState(null);
+  const [moduleChecked,setModuleChecked]=useState(false);
   const [practiceAnswers,setPracticeAnswers] = useState([]);
   const [quizAnswers,setQuizAnswers] = useState({});
   const [attempts,setAttempts] = useState(0);
@@ -85,8 +104,10 @@ export default function App() {
   const guided = available[guidedIndex] || available[0];
   const score = quiz.reduce((sum,q,i)=>sum+(quizAnswers[i]===q.correct?1:0),0);
   const passed = score >= 7;
-  function choosePath(id){setPath(id);setGuidedIndex(0);setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setStage('preparation');}
-  function restart(){setGuidedIndex(0);setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);setAttempts(0);}
+  function choosePath(id){setUnlocked(0);setModuleIndex(0);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setPath(id);setGuidedIndex(0);setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setStage('module-map');}
+  function restart(){setUnlocked(0);setModuleIndex(0);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setGuidedIndex(0);setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);setAttempts(0);}
+  function openModule(i){if(i>unlocked)return;setModuleIndex(i);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setStage('module-activity');}
+  function advanceModule(){const total=learningModules[moduleIndex].items.length;if(activityIndex+1<total){setActivityIndex(i=>i+1);setModuleChoice(null);setModuleChecked(false);}else{setUnlocked(n=>Math.max(n,moduleIndex+1));setStage('module-map');}}
   function advancePractice(){if(!answer.trim())return;setPracticeAnswers(prev=>[...prev,answer.trim()]);setAnswer('');setShowExample(false);if(index+1>=available.length){setStage('evaluation-intro');}else{setIndex(i=>i+1);}}
   function submitQuiz(){if(Object.keys(quizAnswers).length!==quiz.length)return;setAttempts(n=>n+1);setStage('result');}
   async function generate(e) {
@@ -113,6 +134,31 @@ export default function App() {
       {stage==='paths' && <div className="training"><p className="progress">ESCOLHA SUA TRILHA</p><h3>Sua jornada de aprendizagem</h3><p>{goals[goal]} • {areas[area]} • {levels[level]}</p>
        <div className="path-list">{paths.map(p=><article className="path-card" key={p.id}><strong>{p.title}</strong>{recommended===p.id&&<span className="path-tag">Recomendada para você</span>}<p>{p.id==='fundamentos'?'Apresentações e frases essenciais.':p.id==='entrevista'?'Perguntas e respostas de entrevistas.':'Expressões para o ambiente de trabalho.'}</p><button type="button" className={recommended===p.id?'recommended-path-button':undefined} onClick={()=>choosePath(p.id)}>{recommended===p.id?'✦ Começar minha trilha recomendada →':'Escolher esta trilha →'}</button></article>)}</div>
        <p className="tip">Neste MVP, as trilhas compartilham exercícios demonstrativos. Conteúdos específicos ainda serão desenvolvidos.</p><button type="button" className="secondary" onClick={()=>setStage('intro')}>Alterar respostas</button>
+      </div>}
+      {stage==='module-map' && <div className="training">
+        <p className="progress">TRILHA DE APRENDIZAGEM • {paths.find(p=>p.id===path)?.title}</p>
+        <h3>Minha jornada profissional</h3>
+        <p>Conclua as atividades de cada módulo para desbloquear o próximo. Você pode repetir os módulos já concluídos, sem nota mínima.</p>
+        <div className="module-progress"><strong>Progresso: {unlocked} de 4 módulos</strong><div className="progress-track"><div style={{width:(unlocked/4*100)+'%'}}/></div></div>
+        <div className="module-map">{learningModules.map((m,i)=><article className={'module-tile '+(i>unlocked?'module-locked':'')} key={i}>
+          <span className="module-icon" aria-hidden="true">{i>unlocked?'🔒':i<unlocked?'✓':'✦'}</span>
+          <div className="module-details"><strong>{i+1}. {m.title}</strong><p>{m.desc}</p><small>{i>unlocked?'Bloqueado — conclua o módulo anterior':i<unlocked?'Concluído • disponível para revisão':'Disponível agora'}</small></div>
+          {i<=unlocked&&<button type="button" onClick={()=>openModule(i)}>{i<unlocked?'Revisar módulo':'Começar módulo →'}</button>}
+        </article>)}</div>
+        <div className="module-final"><strong>🏆 Desafio final</strong><p>{unlocked===4?'Você concluiu os quatro módulos! A avaliação opcional está disponível.':'Desbloqueado após concluir os quatro módulos.'}</p>
+        {unlocked===4?<button type="button" onClick={()=>setStage('evaluation-intro')}>Ir para avaliação opcional →</button>:<span aria-label="Desafio final bloqueado">🔒 Bloqueado</span>}</div>
+        <button type="button" className="secondary" onClick={()=>setStage('paths')}>Voltar às trilhas</button>
+        <p className="privacy-note">O progresso fica apenas nesta sessão. Atualizar ou fechar a página reinicia os módulos. Os conteúdos são demonstrativos e ainda não são personalizados por trilha.</p>
+      </div>}
+      {stage==='module-activity' && <div className="training">
+        <p className="progress">MÓDULO {moduleIndex+1} DE 4 • ATIVIDADE {activityIndex+1} DE {learningModules[moduleIndex].items.length}</p>
+        <h3>{learningModules[moduleIndex].title}</h3>
+        <div className="learning-card"><strong>{learningModules[moduleIndex].items[activityIndex].en}</strong><p>{learningModules[moduleIndex].items[activityIndex].pt}</p><AudioControls en={learningModules[moduleIndex].items[activityIndex].en} pt={learningModules[moduleIndex].items[activityIndex].pt}/></div>
+        <fieldset className="quiz-question"><legend>{learningModules[moduleIndex].items[activityIndex].q}</legend>
+        {learningModules[moduleIndex].items[activityIndex].opts.map((opt,j)=><label className="quiz-option" key={j}><input type="radio" name="module-answer" checked={moduleChoice===j} onChange={()=>{setModuleChoice(j);setModuleChecked(false)}}/><span>{opt}</span></label>)}</fieldset>
+        {moduleChecked&&<div className="learning-card" role="status"><strong>{moduleChoice===learningModules[moduleIndex].items[activityIndex].correct?'Muito bem!':'Vamos aprender com esta tentativa!'}</strong><p>{learningModules[moduleIndex].items[activityIndex].why}</p><p><b>Resposta:</b> {learningModules[moduleIndex].items[activityIndex].opts[learningModules[moduleIndex].items[activityIndex].correct]}</p></div>}
+        <div className="actions"><button type="button" className="secondary" onClick={()=>setStage('module-map')}>Voltar ao mapa</button>
+        <button type="button" disabled={moduleChoice===null} onClick={()=>moduleChecked?advanceModule():setModuleChecked(true)}>{!moduleChecked?'Conferir resposta':activityIndex+1===learningModules[moduleIndex].items.length?'Concluir módulo →':'Próxima atividade →'}</button></div>
       </div>}
       {stage==='preparation' && <div className="training">
         <p className="progress">ETAPA 1 DE 4 • Preparação • {paths.find(p=>p.id===path)?.title}</p><div className="progress-track"><div style={{width:'25%'}}/></div>
