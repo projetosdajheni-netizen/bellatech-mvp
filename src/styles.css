@@ -393,3 +393,13 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .footer-description{margin:0;color:#795d8b;font-size:13px}
 .footer-disclaimer{max-width:760px;margin:10px 0 0;padding-top:12px;border-top:1px solid #e9d9ef;color:#826f90;font-size:11px;line-height:1.6}
 @media(max-width:700px){.bellatech-footer{margin-top:30px;border-radius:18px}.footer-inner{padding:19px 14px}.footer-brand .logo-shooting-star svg{width:45px;height:42px}.footer-description{font-size:12px}.footer-disclaimer{font-size:10px}}
+
+/* Convite de acesso antes de iniciar a jornada */
+.journey-gate{text-align:center}
+.journey-gate-symbol{font-size:34px;margin:0 0 8px}
+.journey-gate h2{margin:0 18px 10px;font-size:24px}
+.journey-gate>p{line-height:1.55;margin:0 0 18px}
+.journey-gate-benefits{display:flex;flex-direction:column;gap:12px;text-align:left;background:#f7effb;border-radius:14px;padding:16px;margin:0 0 20px;color:#503361;font-size:14px}
+.journey-gate-primary{display:block;width:100%;border-radius:999px;padding:13px 18px}
+.journey-gate-visitor{display:block;margin:10px auto 0;font-size:13px}
+@media(max-width:700px){.journey-gate h2{font-size:21px}.journey-gate-benefits{font-size:13px}}
