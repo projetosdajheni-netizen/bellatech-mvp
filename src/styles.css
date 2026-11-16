@@ -189,3 +189,18 @@ button.hero-cta{font:inherit;cursor:pointer;border:0;text-decoration:none;displa
 .module-map .module-photo-cover img{object-position:center center}
 .module-map .module-photo-cover.cover-locked img{filter:none;opacity:1}
 .module-map .module-photo-cover.cover-locked .module-photo-tint{display:none}
+
+/* Cartões complementares: desafio final e comunidade */
+.module-extras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:24px 0}
+.module-extra-card{background:white;border:1px solid #e6d8ee;border-radius:19px;overflow:hidden;box-shadow:0 8px 24px rgba(65,30,95,.07);display:flex;flex-direction:column}
+.module-extra-cover{position:relative;aspect-ratio:2/1;background:linear-gradient(115deg,#633795,#c276b1);overflow:hidden}
+.module-extra-cover.community-cover{background:linear-gradient(115deg,#61409a,#aa6da8)}
+.module-extra-cover img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 42%}
+.module-extra-body{padding:18px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;flex:1}
+.module-extra-body strong{font-size:19px;color:#512280}
+.module-extra-body p{margin:0;font-size:14px;line-height:1.5;flex:1}
+.module-extra-body button{width:100%;min-height:47px}
+.module-extra-body button:disabled{background:#ebe7f0;color:#736a7c;opacity:1}
+.module-extra-note{font-size:12px;color:#695877;font-weight:650}
+.status-community{background:#e9e2f5;color:#5b3c89}
+@media(max-width:700px){.module-extras{grid-template-columns:1fr;gap:16px}.module-extra-cover{aspect-ratio:2.3/1}}
