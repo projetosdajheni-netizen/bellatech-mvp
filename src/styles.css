@@ -104,3 +104,17 @@ header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
 .learning-card p{margin:10px 0;font-size:16px}
 .learning-card small{color:#685575}
 @media(max-width:600px){.journey-step{padding:12px;gap:11px}.journey-number{flex-basis:36px;height:36px}.learning-card{padding:14px}.training .actions{flex-wrap:wrap}.training .actions button{min-width:0;flex:1 1 160px}}
+
+/* Trilhas selecionáveis e controles acessíveis de reprodução */
+.path-list{display:grid;gap:14px;margin:20px 0}
+.path-card{border:1px solid #e3d3ed;background:#fcf9ff;border-radius:15px;padding:18px}
+.path-card strong{display:block;color:#512280;font-size:18px}
+.path-card p{margin:9px 0 13px}
+.path-tag{display:inline-block;background:#f0def8;color:#592684;border-radius:30px;font-size:12px;font-weight:750;padding:5px 10px;margin-top:9px}
+.path-card button{width:100%}
+.audio-controls{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:14px 0}
+.audio-controls button{padding:11px 13px;font-size:14px;flex:0 1 auto}
+.audio-controls label{display:inline-flex!important;align-items:center;gap:7px;margin:0!important;font-size:14px;font-weight:550}
+.audio-controls input{width:18px;height:18px;accent-color:#672f9d}
+.audio-controls small{width:100%;color:#735275}
+@media(max-width:480px){.audio-controls button{flex:1 1 145px}.path-card{padding:15px}}
