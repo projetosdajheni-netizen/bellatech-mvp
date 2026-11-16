@@ -44,12 +44,16 @@ const learningModules=[
   {en:'Tell me about yourself.',pt:'Fale um pouco sobre você.',q:'Qual resposta apresenta você?',opts:['My name is Ana. I am learning English.','I no name English.','Technology is name.'],correct:0,why:'Uma apresentação pode começar com seu nome e o que está aprendendo.'},
   {en:'Why are you interested in technology?',pt:'Por que você tem interesse em tecnologia?',q:'Qual resposta demonstra interesse profissional?',opts:['I never want to learn.','I want to learn and develop my skills.','I am not interested.'],correct:1,why:'A resposta expressa interesse em aprender e desenvolver habilidades.'}]}
 ];
-const modulePhotos=[["dMiw0B4v6iQ","Mulher em videochamada profissional"],["iQqRM0XJvn8","Mulher desenvolvedora trabalhando com código"],["gZvyuZ4fsfw","Mulheres de diferentes gerações conversando em atividade colaborativa"],["9TF9pMrCFMo","Duas mulheres em uma entrevista profissional"]];
+const modulePhotos=[
+ ['bellatech_capa_modulo_1.jpg','Mulher em videochamada profissional'],
+ ['bellatech_capa_modulo_2.jpg','Mulher trabalhando com tecnologia'],
+ ['bellatech_capa_modulo_3.jpg','Mulher 50+ apresentando suas habilidades'],
+ ['bellatech_capa_modulo_4.jpg','Mulher em entrevista profissional']
+];
 function ModuleCover({variant,locked}){
- const [id,description]=modulePhotos[variant];
+ const [filename,description]=modulePhotos[variant];
  return <div className={'module-cover module-photo-cover module-cover-'+variant+(locked?' cover-locked':'')}>
-  <img src={'https://unsplash.com/photos/'+id+'/download?force=true&w=1000'} alt={description} loading="lazy" referrerPolicy="no-referrer"/>
-  <span className="module-photo-tint" aria-hidden="true"></span>
+  <img src={'https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/'+filename} alt={description} loading="lazy"/>
   {locked&&<span className="module-cover-lock" aria-label="Módulo bloqueado">🔒</span>}
  </div>;
 }
