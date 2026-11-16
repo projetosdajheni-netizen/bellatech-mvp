@@ -237,6 +237,10 @@ export default function App() {
   const [result,setResult] = useState(null);
   const [err,setErr] = useState('');
   const [busy,setBusy] = useState(false);
+  const [coachAnswer,setCoachAnswer]=useState('');
+  const [coachFeedback,setCoachFeedback]=useState(null);
+  const [coachBusy,setCoachBusy]=useState(false);
+  const [coachError,setCoachError]=useState('');
   const recommended=level==='zero'?'fundamentos':goal==='trabalho'?'trabalho':'entrevista';
   const available = exercises.filter(q => (q.area === area || q.area === 'geral') && (q.level === level || q.level === 'zero')).slice(0,3);
   const current = available[index] || available[0];
@@ -367,6 +371,19 @@ export default function App() {
     }catch(error){setResultSaveError('Falha ao salvar a nota: '+error.message);}
     finally{setResultSaving(false);}
   }
+  async function requestCoachFeedback(e){
+    e.preventDefault();
+    setCoachError('');setCoachFeedback(null);
+    if(!session?.access_token){setCoachError('Entre na sua conta para experimentar a IA.');return;}
+    setCoachBusy(true);
+    try{
+      const response=await fetch('/api/coach',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({answer:coachAnswer})});
+      const data=await response.json();
+      if(!response.ok)throw new Error(data.error||'A IA não está disponível no momento.');
+      setCoachFeedback(data);
+    }catch(error){setCoachError(error.message||'Falha ao solicitar feedback.');}
+    finally{setCoachBusy(false);}
+  }
   async function generate(e) {
     e.preventDefault();setResult(null);setErr('');setBusy(true);
     try {
@@ -383,8 +400,10 @@ export default function App() {
     {session&&syncStatus&&(/erro|falha|não foi possível/i.test(syncStatus))&&<p className="sync-notice" role="alert">{syncStatus}</p>}
     {stage==='home'&&session&&hasSavedJourney&&progressLoaded&&<section className="resume-journey" aria-label="Retomar sua aprendizagem"><div><strong>💜 Sua jornada está esperando!</strong><p>Trilha: {paths.find(p=>p.id===path)?.title} · {unlocked} de 4 módulos concluídos{savedScore!==null?' · Última avaliação: '+savedScore+'/10':''}</p></div><button type="button" onClick={continueJourney}>Continuar minha jornada →</button></section>}
     {stage==='home' && <section className="hero" onPointerMove={createShootingStar} onPointerDown={event=>{if(event.pointerType!=='mouse')createShootingStar(event);}}><div className="shooting-stars" aria-hidden="true">{shootingStars.map(star=><span key={star.id} className="shooting-star" style={{left:star.x,top:star.y}} onAnimationEnd={()=>setShootingStars(current=>current.filter(item=>item.id!==star.id))}/>)}</div><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva sua comunicação em inglês, ganhe confiança e prepare-se para novas oportunidades profissionais.</p><button type="button" className="hero-cta" onClick={requestJourneyStart}><span className="hero-cta-rocket" aria-hidden="true">🚀</span><span className="hero-cta-label">Começar treino gratuito</span><span className="hero-cta-arrow" aria-hidden="true">→</span></button></div><div className="hero-mobile-photo" role="img" aria-label="Quatro mulheres sorrindo diante de uma bandeira arco-íris"/><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
+    {stage==='home'&&<section className="coach-home"><div><span className="coach-eyebrow">✨ EXPERIÊNCIA EXPERIMENTAL</span><h2>BellaTech AI Coach</h2><p>Treine uma resposta de entrevista em inglês e receba sugestões personalizadas com IA.</p></div><button type="button" onClick={()=>{setStage('ai-coach');window.scrollTo({top:0,behavior:'smooth'});}}>✨ Experimentar IA</button></section>}
     {stage!=='home' && <div className="journey-navigation"><div className="journey-navigation-actions"><button type="button" className="secondary" onClick={goToPreviousPage} disabled={previousStages.current.length===0}>← Página anterior</button><button type="button" className="secondary" onClick={goHome}>⌂ Voltar ao início</button></div><span>Ambiente de aprendizagem BellaTech</span></div>}
     {stage!=='home' && <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
+      {stage==='ai-coach'&&<section className="coach-panel"><span className="coach-eyebrow">✨ BELLA TECH AI COACH • EXPERIMENTAL</span><h2>Pratique uma entrevista em inglês</h2><p>Responda à pergunta abaixo. A IA oferecerá orientações de linguagem, não uma avaliação profissional.</p><div className="coach-question"><strong>Tell me about yourself.</strong><span>Fale um pouco sobre você e seus interesses profissionais.</span></div>{!session?<div className="coach-login"><p>Entre na sua conta para testar a IA. A jornada de aprendizagem continua disponível sem login.</p><button type="button" onClick={()=>{setAuthMode('login');setAuthOpen(true);}}>Entrar ou criar conta</button></div>:<form onSubmit={requestCoachFeedback}><label htmlFor="coach-answer">Sua resposta em inglês</label><textarea id="coach-answer" rows={5} maxLength={900} minLength={12} value={coachAnswer} onChange={e=>setCoachAnswer(e.target.value)} placeholder="I work with technology and I want to develop my skills..." required/><p className="coach-note">Evite compartilhar dados pessoais. O texto será enviado ao serviço de IA para gerar o feedback e não será salvo pela BellaTech.</p><button type="submit" disabled={coachBusy||coachAnswer.trim().length<12}>{coachBusy?'Analisando resposta...':'✨ Receber feedback com IA'}</button></form>}{coachError&&<p className="auth-error" role="alert">{coachError}</p>}{coachFeedback&&<div className="coach-feedback" aria-live="polite"><h3>Seu feedback personalizado</h3><div><strong>✓ Ponto positivo</strong><p>{coachFeedback.positivo}</p></div><div><strong>✦ O que melhorar</strong><p>{coachFeedback.melhoria}</p></div><div><strong>✧ Exemplo em inglês</strong><p>{coachFeedback.exemplo}</p></div><small>Feedback automatizado experimental; pode conter erros. Não representa avaliação de proficiência.</small></div>}</section>}
       {(stage==='intro'||stage==='paths') && <div className="journey-intro"><p className="eyebrow">INGLÊS PROFISSIONAL</p><h2>Encontre sua trilha</h2><p>Conte seu objetivo e escolha por onde começar. A sugestão é inicial e não representa um teste de proficiência.</p></div>}
       {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setStage('paths')}}>
        <label htmlFor="goal">Objetivo profissional</label><select id="goal" value={goal} onChange={e=>setGoal(e.target.value)}>{Object.entries(goals).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
