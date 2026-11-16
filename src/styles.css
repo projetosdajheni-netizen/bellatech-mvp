@@ -204,3 +204,12 @@ button.hero-cta{font:inherit;cursor:pointer;border:0;text-decoration:none;displa
 .module-extra-note{font-size:12px;color:#695877;font-weight:650}
 .status-community{background:#e9e2f5;color:#5b3c89}
 @media(max-width:700px){.module-extras{grid-template-columns:1fr;gap:16px}.module-extra-cover{aspect-ratio:2.3/1}}
+
+/* Abertura da jornada: hierarquia simples e progresso legível */
+.journey-intro{margin:0 0 22px}
+.journey-intro .eyebrow{margin:0 0 10px;letter-spacing:.09em}
+.journey-intro h2{margin:0 0 12px;color:#452078;line-height:1.18}
+.journey-intro p:not(.eyebrow){margin:0;color:#665675;line-height:1.6}
+.module-progress-label{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:9px}
+.module-progress-label span{color:#663399;font-weight:700;font-size:.9rem}
+@media(max-width:560px){.module-progress-label{align-items:flex-start}.journey-intro h2{font-size:1.65rem}}
