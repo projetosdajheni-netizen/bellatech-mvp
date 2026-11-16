@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 // Interface exclusivamente para avaliadoras autorizadas.
 // A chave não é gravada em localStorage, cookies nem no repositório.
