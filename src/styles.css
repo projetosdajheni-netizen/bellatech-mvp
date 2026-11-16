@@ -175,3 +175,12 @@ header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
 .journey-navigation button{width:auto;min-height:42px}
 button.hero-cta{font:inherit;cursor:pointer;border:0;text-decoration:none;display:inline-flex;align-items:center;gap:12px}
 @media(max-width:520px){.journey-navigation{align-items:flex-start;flex-direction:column}.journey-navigation button{width:auto}}
+
+/* Fotografias de situações profissionais nas capas */
+.module-map .module-photo-cover{background:#7651a1}
+.module-map .module-photo-cover img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 42%;transition:transform .35s ease,filter .25s ease}
+.module-map .module-tile:hover .module-photo-cover img{transform:scale(1.045)}
+.module-map .module-photo-tint{position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,rgba(76,35,122,.17),rgba(175,88,166,.13))}
+.module-map .module-photo-cover.cover-locked img{filter:grayscale(.35);opacity:.65}
+.module-map .module-photo-cover.cover-locked .module-photo-tint{background:rgba(80,57,112,.25)}
+@media(prefers-reduced-motion:reduce){.module-map .module-photo-cover img{transition:none}.module-map .module-tile:hover .module-photo-cover img{transform:none}}
