@@ -32,6 +32,7 @@ export default function App() {
   const [area,setArea] = useState('geral');
   const [level,setLevel] = useState('zero');
   const [stage,setStage] = useState('intro');
+  const [guidedIndex,setGuidedIndex] = useState(0);
   const [practiceAnswers,setPracticeAnswers] = useState([]);
   const [quizAnswers,setQuizAnswers] = useState({});
   const [attempts,setAttempts] = useState(0);
@@ -44,10 +45,11 @@ export default function App() {
   const [busy,setBusy] = useState(false);
   const available = exercises.filter(q => (q.area === area || q.area === 'geral') && (q.level === level || q.level === 'zero')).slice(0,3);
   const current = available[index] || available[0];
+  const guided = available[guidedIndex] || available[0];
   const score = quiz.reduce((sum,q,i)=>sum+(quizAnswers[i]===q.correct?1:0),0);
   const passed = score >= 7;
-  function restart(){setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);setAttempts(0);}
-  function advancePractice(){if(!answer.trim())return;setPracticeAnswers(prev=>[...prev,answer.trim()]);setAnswer('');setShowExample(false);if(index+1>=available.length){setStage('quiz');}else{setIndex(i=>i+1);}}
+  function restart(){setGuidedIndex(0);setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);setAttempts(0);}
+  function advancePractice(){if(!answer.trim())return;setPracticeAnswers(prev=>[...prev,answer.trim()]);setAnswer('');setShowExample(false);if(index+1>=available.length){setStage('evaluation-intro');}else{setIndex(i=>i+1);}}
   function submitQuiz(){if(Object.keys(quizAnswers).length!==quiz.length)return;setAttempts(n=>n+1);setStage('result');}
   async function generate(e) {
     e.preventDefault();setResult(null);setErr('');setBusy(true);
@@ -63,25 +65,50 @@ export default function App() {
     <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><a className="hero-cta" href="#disciplina">Começar treino gratuito <span aria-hidden="true">→</span></a></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>
     <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
       <p className="eyebrow">MY FIRST JOB INTERVIEW</p><h2>Minha primeira entrevista em inglês</h2>
-      <p>Disciplina demonstrativa: três perguntas de prática e uma avaliação final com dez questões. Você precisa acertar pelo menos sete para avançar. O resultado mede apenas este conteúdo, não sua proficiência geral.</p>
-      {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setShowExample(false);setStage('practice');}}>
+      <p>Aprenda em quatro etapas: preparação, aprendizagem guiada, prática e avaliação final. Você poderá estudar exemplos antes de responder. A avaliação verifica apenas este conteúdo, não sua proficiência geral.</p>
+      {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setShowExample(false);setGuidedIndex(0);setStage('preparation');}}>
         <label htmlFor="area">Área profissional</label><select id="area" value={area} onChange={e=>setArea(e.target.value)}>{Object.entries(areas).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
         <label htmlFor="level">Seu nível de inglês</label><select id="level" value={level} onChange={e=>setLevel(e.target.value)}>{Object.entries(levels).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
-        <button type="submit">Começar treino gratuito →</button>
+        <button type="submit">Começar minha jornada →</button>
       </form>}
+      {stage==='intro' && <div className="journey-list" aria-label="Etapas da aprendizagem">
+        {[['01','Preparação','Conheça expressões essenciais e como funciona uma entrevista.'],['02','Aprendizagem guiada','Leia traduções, respostas-modelo e dicas.'],['03','Prática','Escreva suas respostas e pratique no seu ritmo.'],['04','Avaliação final','Verifique o que aprendeu e revise as respostas.']].map(([n,title,desc])=><div className="journey-step" key={n}><span className="journey-number">{n}</span><div><strong>{title}</strong><p>{desc}</p></div></div>)}
+      </div>}
+      {stage==='preparation' && <div className="training">
+        <p className="progress">ETAPA 1 DE 4 • Preparação</p><div className="progress-track"><div style={{width:'25%'}}/></div>
+        <h3>Seu primeiro contato com entrevistas em inglês</h3>
+        <p>Você não precisa falar inglês perfeitamente para começar. Nesta jornada, vamos estudar perguntas comuns e construir respostas simples, uma etapa por vez.</p>
+        <div className="learning-card"><strong>Expressões para começar</strong><p><b>Hello!</b> — Olá!</p><p><b>My name is...</b> — Meu nome é...</p><p><b>I am learning English.</b> — Estou aprendendo inglês.</p><p><b>Thank you for the opportunity.</b> — Obrigada pela oportunidade.</p></div>
+        <p className="tip">Dica: use respostas verdadeiras e curtas. Você pode estudar cada exemplo antes de escrever.</p>
+        <div className="actions"><button type="button" className="secondary" onClick={restart}>Voltar</button><button type="button" onClick={()=>setStage('guided')}>Continuar para aprendizagem →</button></div>
+      </div>}
+      {stage==='guided' && <div className="training">
+        <p className="progress">ETAPA 2 DE 4 • Aprendizagem guiada • {guidedIndex+1} de {available.length}</p><div className="progress-track"><div style={{width:(25+25*(guidedIndex+1)/available.length)+'%'}}/></div>
+        <h3>Aprenda com uma pergunta de entrevista</h3>
+        <div className="learning-card"><strong>{guided.en}</strong><p><b>Tradução:</b> {guided.pt}</p></div>
+        <div className="learning-card"><strong>Exemplo de resposta</strong><p>{guided.sample}</p><small>Este é apenas um modelo. Use sua própria experiência na prática.</small></div>
+        <p className="tip"><strong>Dica da BellaTech:</strong> {guided.tip}</p>
+        <div className="actions"><button type="button" className="secondary" onClick={()=>guidedIndex===0?setStage('preparation'):setGuidedIndex(i=>i-1)}>Voltar</button><button type="button" onClick={()=>{if(guidedIndex+1>=available.length){setIndex(0);setStage('practice')}else setGuidedIndex(i=>i+1)}}>{guidedIndex+1>=available.length?'Começar a praticar →':'Próximo exemplo →'}</button></div>
+      </div>}
       {stage==='practice' && <div className="training">
-        <p className="progress">ETAPA 1 DE 2 • Prática {index+1} de {available.length}</p>
-        <div className="progress-track"><div style={{width:((index+1)/available.length*100)+'%'}}/></div>
+        <p className="progress">ETAPA 3 DE 4 • Prática {index+1} de {available.length}</p>
+        <div className="progress-track"><div style={{width:(50+(index+1)/available.length*25)+'%'}}/></div>
         <h3>{current.en}</h3><p><strong>Tradução:</strong> {current.pt}</p>
         <label htmlFor="answer">Sua resposta em inglês <span aria-hidden="true">*</span></label>
         <textarea id="answer" rows={4} required value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Escreva sua resposta em inglês. Não inclua informações pessoais."/>
         <p className="tip"><strong>Dica:</strong> {current.tip}</p>
         <button type="button" className="secondary" onClick={()=>setShowExample(v=>!v)}>{showExample?'Ocultar exemplo':'Ver resposta de exemplo'}</button>
         {showExample && <div className="output"><strong>Exemplo para estudar:</strong><p>{current.sample}</p><small>Adapte ao seu contexto; não invente experiências.</small></div>}
-        <div className="actions"><button type="button" className="secondary" onClick={restart}>Sair do treino</button><button type="button" disabled={!answer.trim()} onClick={advancePractice}>{index+1>=available.length?'Ir para avaliação':'Próxima pergunta →'}</button></div>
+        <div className="actions"><button type="button" className="secondary" onClick={restart}>Sair do treino</button><button type="button" disabled={!answer.trim()} onClick={advancePractice}>{index+1>=available.length?'Concluir prática →':'Próxima pergunta →'}</button></div>
+      </div>}
+      {stage==='evaluation-intro' && <div className="training">
+        <p className="progress">ETAPA 4 DE 4 • Avaliação final</p><div className="progress-track"><div style={{width:'100%'}}/></div>
+        <h3>Você concluiu a prática!</h3><p>Agora você pode avaliar o que aprendeu. São dez questões sobre as expressões estudadas, com explicações ao final. A meta demonstrativa é acertar sete questões.</p>
+        <p className="tip">A avaliação é sobre o conteúdo da jornada, não sobre sua capacidade profissional ou fluência.</p>
+        <div className="actions"><button type="button" className="secondary" onClick={()=>{setIndex(available.length-1);setStage('practice')}}>Revisar prática</button><button type="button" onClick={()=>setStage('quiz')}>Iniciar avaliação →</button></div>
       </div>}
       {stage==='quiz' && <div className="training">
-        <p className="progress">ETAPA 2 DE 2 • Avaliação final</p>
+        <p className="progress">ETAPA 4 DE 4 • Avaliação final</p>
         <h3>Questionário de aprendizagem</h3><p>Responda todas as 10 questões. Cada acerto vale um ponto. Nota mínima: 7/10 (70%).</p>
         {quiz.map((item,i)=><fieldset className="quiz-question" key={i}><legend>{i+1}. {item.q}</legend>{item.opts.map((option,j)=><label className="quiz-option" key={j}><input type="radio" name={'q'+i} checked={quizAnswers[i]===j} onChange={()=>setQuizAnswers(prev=>({...prev,[i]:j}))}/><span>{option}</span></label>)}</fieldset>)}
         <p className="progress">{Object.keys(quizAnswers).length} de 10 questões respondidas</p>
