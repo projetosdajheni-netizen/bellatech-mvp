@@ -366,3 +366,10 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
  .auth-user-label{font-size:10px;max-width:120px}
  .auth-dialog{padding:24px 18px}
 }
+
+/* Retomar a trilha salva na nuvem */
+.resume-journey{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#f6eafa;border:1px solid #e4c7ed;border-radius:18px;padding:17px 20px;margin:12px 0 20px;color:#3c2353}
+.resume-journey strong{display:block;font-size:17px}
+.resume-journey p{margin:6px 0 0;font-size:13px;line-height:1.5}
+.resume-journey button{flex-shrink:0;border-radius:999px;padding:12px 18px}
+@media(max-width:700px){.resume-journey{flex-direction:column;align-items:stretch;padding:15px;gap:12px}.resume-journey button{width:100%}}
