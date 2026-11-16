@@ -95,6 +95,21 @@ export default function App() {
   const [path,setPath]=useState('fundamentos');
   const [level,setLevel] = useState('zero');
   const [stage,setStage] = useState('home');
+  const [shootingStars,setShootingStars]=useState([]);
+  const starCounter=useRef(0);
+  const lastStarTime=useRef(0);
+  function createShootingStar(event){
+    if(event.pointerType!=='mouse'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    const now=Date.now();
+    if(now-lastStarTime.current<210)return;
+    lastStarTime.current=now;
+    const bounds=event.currentTarget.getBoundingClientRect();
+    const x=event.clientX-bounds.left;
+    const y=event.clientY-bounds.top;
+    const id=++starCounter.current;
+    setShootingStars(current=>[...current.slice(-7),{id,x,y}]);
+  }
+
   const previousStages = useRef([]);
   const currentStage = useRef('home');
   const skipHistory = useRef(false);
@@ -151,7 +166,7 @@ export default function App() {
   }
   return <main className="container">
     <header className="brand-header"><a className="brand-home-link" href="/" aria-label="BellaTech — voltar à página inicial"><div className="logo" aria-hidden="true">✦</div><div className="brand-copy"><strong className="brand-name">Bella<span className="brand-tech">Tech</span></strong><small className="brand-subtitle">Desenvolvimento profissional e empregabilidade</small><span className="brand-audience">Para mulheres LGBTQIAPN+</span></div></a></header>
-    {stage==='home' && <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><button type="button" className="hero-cta" onClick={()=>{setStage("intro");window.scrollTo({top:0,behavior:"smooth"});}}><span className="hero-cta-rocket" aria-hidden="true">🚀</span><span className="hero-cta-label">Começar treino gratuito</span><span className="hero-cta-arrow" aria-hidden="true">→</span></button></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
+    {stage==='home' && <section className="hero" onPointerMove={createShootingStar}><div className="shooting-stars" aria-hidden="true">{shootingStars.map(star=><span key={star.id} className="shooting-star" style={{left:star.x,top:star.y}} onAnimationEnd={()=>setShootingStars(current=>current.filter(item=>item.id!==star.id))}/>)}</div><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><button type="button" className="hero-cta" onClick={()=>{setStage("intro");window.scrollTo({top:0,behavior:"smooth"});}}><span className="hero-cta-rocket" aria-hidden="true">🚀</span><span className="hero-cta-label">Começar treino gratuito</span><span className="hero-cta-arrow" aria-hidden="true">→</span></button></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
     {stage!=='home' && <div className="journey-navigation"><div className="journey-navigation-actions"><button type="button" className="secondary" onClick={goToPreviousPage} disabled={previousStages.current.length===0}>← Página anterior</button><button type="button" className="secondary" onClick={()=>{restart();setStage("home");window.scrollTo({top:0,behavior:"smooth"});}}>⌂ Voltar ao início</button></div><span>Ambiente de aprendizagem BellaTech</span></div>}
     {stage!=='home' && <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
       {(stage==='intro'||stage==='paths') && <div className="journey-intro"><p className="eyebrow">INGLÊS PROFISSIONAL</p><h2>Encontre sua trilha</h2><p>Conte seu objetivo e escolha por onde começar. A sugestão é inicial e não representa um teste de proficiência.</p></div>}
