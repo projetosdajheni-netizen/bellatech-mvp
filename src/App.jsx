@@ -107,7 +107,7 @@ export default function App() {
   const [goal,setGoal]=useState('entrevista');
   const [path,setPath]=useState('fundamentos');
   const [level,setLevel] = useState('zero');
-  const [stage,setStage] = useState('intro');
+  const [stage,setStage] = useState('home');
   const [guidedIndex,setGuidedIndex] = useState(0);
   const [unlocked,setUnlocked]=useState(0);
   const [moduleIndex,setModuleIndex]=useState(0);
@@ -147,8 +147,9 @@ export default function App() {
   }
   return <main className="container">
     <header className="brand-header"><a className="brand-home-link" href="/" aria-label="BellaTech — voltar à página inicial"><div className="logo" aria-hidden="true">✦</div><div className="brand-copy"><strong className="brand-name">Bella<span className="brand-tech">Tech</span></strong><small className="brand-subtitle">Desenvolvimento profissional e empregabilidade</small><span className="brand-audience">Para mulheres LGBTQIAPN+</span></div></a></header>
-    <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><a className="hero-cta" href="#disciplina">Começar treino gratuito <span aria-hidden="true">→</span></a></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>
-    <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
+    {stage==='home' && <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><button type="button" className="hero-cta" onClick={()=>{setStage("intro");window.scrollTo({top:0,behavior:"smooth"});}}>Começar treino gratuito <span aria-hidden="true">→</span></button></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
+    {stage!=='home' && <div className="journey-navigation"><button type="button" className="secondary" onClick={()=>{restart();setStage("home");window.scrollTo({top:0,behavior:"smooth"});}}>← Voltar ao início</button><span>Ambiente de aprendizagem BellaTech</span></div>}
+    {stage!=='home' && <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
       <p className="eyebrow">SUA JORNADA BELLATECH</p><h2>Inglês para oportunidades profissionais</h2>
       <p>Responda sobre seu objetivo e seu inglês para receber uma sugestão inicial. Você poderá escolher outra trilha. Esta recomendação não é um teste de proficiência.</p>
       {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setStage('paths')}}>
@@ -240,14 +241,14 @@ export default function App() {
         <p className="privacy-note">Nesta versão, suas respostas e notas não são enviadas ao banco de dados. Ao fechar a página, você perde o resultado. O cadastro e o histórico individual ainda não foram implementados.</p>
         <div className="actions">{!passed && <button type="button" onClick={()=>{setQuizAnswers({});setStage('quiz');}}>Refazer avaliação</button>}<button type="button" className="secondary" onClick={restart}>Voltar ao início</button></div>
       </div>}
-    </section>
-    <details className="panel private"><summary>Área restrita da equipe de avaliação</summary>
+    </section>}
+    {stage==='home' && <details className="panel private"><summary>Área restrita da equipe de avaliação</summary>
       <p>Esta seção é exclusiva de avaliadoras autorizadas. Não compartilhe códigos nem insira dados pessoais.</p>
       <form onSubmit={generate}><label htmlFor="access">Código privado de teste</label><input id="access" type="password" autoComplete="off" value={access} onChange={e=>setAccess(e.target.value)} required/><button disabled={busy||!access}>{busy?'Registrando...':'Solicitar atividade privada'}</button></form>
       {err && <p className="error" role="alert">{err}</p>}
       {result && <p role="status">Solicitação registrada: {result.activityId}. Aguardando revisão humana.</p>}
       <ReviewPanel access={access}/>
-    </details>
+    </details>}
     <footer>Projeto acadêmico em desenvolvimento • Não compartilhe dados pessoais • Nenhuma promessa de contratação ou fluência</footer>
   </main>;
 }
