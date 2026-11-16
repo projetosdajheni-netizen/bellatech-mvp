@@ -11,7 +11,7 @@ export default async function handler(req,res){
   const token=/^Bearer (.+)$/i.exec(req.headers.authorization||'')?.[1];
   if(!token||token.length>4096)return res.status(401).json({error:'Entre na sua conta para experimentar a IA.'});
   const supabaseUrl=process.env.SUPABASE_URL;
-  const publicKey=process.env.SUPABASE_ANON_KEY||process.env.VITE_SUPABASE_ANON_KEY;
+  const publicKey=process.env.SUPABASE_ANON_KEY||process.env.VITE_SUPABASE_ANON_KEY||'sb_publishable_cGHOaAtOzPQVhfrO83Wnxw_FpK8fZV-';
   if(!supabaseUrl||!publicKey)return res.status(503).json({error:'Autenticação temporariamente indisponível.'});
   try{
     const auth=await fetch(new URL('/auth/v1/user',supabaseUrl),{
