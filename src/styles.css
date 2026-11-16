@@ -413,3 +413,24 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .certificate-access button{border-radius:999px;padding:12px 18px}
 .certificate-home{margin:18px 0 24px}
 @media(max-width:700px){.certificate-access{padding:16px}.certificate-access button{width:100%}}
+
+
+/* BellaTech AI Coach — isolated from the learning journey */
+.coach-home{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:22px 0;padding:25px 28px;border:1px solid #e4caee;border-radius:22px;background:linear-gradient(115deg,#fff,#f9ecff)}
+.coach-home h2,.coach-panel h2{color:#512280;margin:8px 0 10px}
+.coach-home p{margin:0;line-height:1.5;color:#64536d}
+.coach-home button,.coach-panel button{border:0;border-radius:12px;background:#6f318c;color:#fff;padding:13px 20px;font-weight:700;cursor:pointer}
+.coach-home button{flex-shrink:0}
+.coach-eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;color:#a0479c}
+.coach-panel{max-width:750px;margin:auto}
+.coach-panel>p{color:#64536d}
+.coach-question{display:flex;flex-direction:column;gap:7px;background:#f7eafb;padding:19px;border-radius:14px;margin:20px 0}
+.coach-question strong{font-size:20px;color:#4d216a}
+.coach-question span,.coach-note{color:#6b5a74;font-size:14px}
+.coach-panel textarea{width:100%;margin:8px 0 4px;resize:vertical;min-height:125px}
+.coach-panel button:disabled{opacity:.55;cursor:not-allowed}
+.coach-feedback{margin-top:22px;border:1px solid #dfc5ed;background:#fffafd;border-radius:16px;padding:22px}
+.coach-feedback>div{margin:15px 0;padding:12px;border-left:3px solid #a45bb4;background:#faf2fd}
+.coach-feedback p{margin:7px 0 0;line-height:1.6}
+.coach-feedback small{color:#6b5a74}
+@media(max-width:640px){.coach-home{flex-direction:column;align-items:stretch;padding:20px}.coach-home button{width:100%}}
