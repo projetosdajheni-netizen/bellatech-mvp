@@ -63,3 +63,10 @@ header{gap:16px;margin-bottom:22px}.logo{background:transparent;color:#ef5fbc;fo
 .brand-header .brand-subtitle{display:block;font-size:13px;line-height:1.35;color:#756784;font-weight:500}
 .brand-audience{display:block;color:#66348d;font-size:13px;line-height:1.35;font-weight:700}
 @media(max-width:480px){.brand-header{gap:10px}.brand-header .logo{font-size:23px}.brand-header .brand-name{font-size:30px}.brand-header .brand-subtitle,.brand-audience{font-size:12px}}
+
+
+/* Marca inteira como link acessível para a página inicial */
+.brand-home-link{display:inline-flex;align-items:center;gap:13px;max-width:100%;color:inherit;text-decoration:none;border-radius:10px;transition:opacity .18s ease}
+.brand-home-link:hover{opacity:.82}
+.brand-home-link:focus-visible{outline:3px solid #8b4cc2;outline-offset:5px}
+@media(max-width:480px){.brand-home-link{gap:10px}}
