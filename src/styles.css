@@ -5,7 +5,7 @@ body{margin:0;background:linear-gradient(140deg,#f9f3ff 0%,#f5effb 50%,#fff8fb 1
 header{display:flex;align-items:center;gap:14px;margin-bottom:25px}header strong{color:#512280;font-size:27px}header small{display:block;color:#756784}
 .logo{background:#552386;color:white;border-radius:13px;padding:9px 14px;font-size:24px}
 .hero{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;min-height:370px;display:flex;align-items:center;color:white;padding:48px 42px;background:#3c195c}
-.hero::before{content:"";position:absolute;inset:0;z-index:-2;background-image:linear-gradient(90deg,rgba(47,20,77,.97) 0%,rgba(61,28,89,.94) 38%,rgba(69,31,97,.64) 72%,rgba(60,26,87,.53) 100%),linear-gradient(150deg,rgba(233,60,126,.30),rgba(255,179,44,.2) 32%,rgba(50,180,126,.25) 60%,rgba(97,77,216,.32) 85%),url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1500&q=85");background-position:center,center,center 40%;background-size:cover}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background-image:linear-gradient(90deg,rgba(47,20,77,.97) 0%,rgba(61,28,89,.94) 38%,rgba(69,31,97,.64) 72%,rgba(60,26,87,.53) 100%),linear-gradient(150deg,rgba(233,60,126,.30),rgba(255,179,44,.2) 32%,rgba(50,180,126,.25) 60%,rgba(97,77,216,.32) 85%),url("https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/a_vibrant_polished_landing_page_banner_in_portugu.png");background-position:center,center,center 40%;background-size:cover}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,transparent 65%,rgba(147,77,191,.10))}
 .hero-content{max-width:680px}.hero span{font-size:12px;letter-spacing:1.2px;font-weight:700}.hero h1{font-size:clamp(31px,5vw,53px);line-height:1.13;margin:22px 0;max-width:640px;text-wrap:balance}.hero p{font-size:18px;line-height:1.6;color:#fff3ff;max-width:600px}.hero-tags{display:flex;gap:9px;flex-wrap:wrap;margin-top:26px}.hero-tags span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:30px;padding:9px 12px;font-size:12px;letter-spacing:0}
 .panel{background:rgba(255,255,255,.98);padding:32px;margin-top:24px;border-radius:20px;box-shadow:0 10px 34px #42226912}.panel h2{margin:8px 0 12px;font-size:27px}.panel p{color:#5f516d;line-height:1.65}.eyebrow{color:#7b3297!important;letter-spacing:2px;font-size:12px;font-weight:800}
@@ -21,13 +21,13 @@ button{background:#672f9d;color:white;font:inherit;font-weight:700;padding:15px 
 .private summary{cursor:pointer;font-weight:700;color:#53258b}.private .panel{box-shadow:none;border:1px solid #e5dbee}.error{color:#a91e47!important}.warning{background:#fff5d9;padding:12px;border-left:3px solid #c58d33;color:#63471a!important}
 footer{text-align:center;margin-top:30px;font-size:12px;color:#7b6a89}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #b481eb;outline-offset:3px}
-@media(max-width:600px){.container{padding:14px 12px 32px}.hero{padding:30px 24px;min-height:360px}.hero::before{background-image:linear-gradient(90deg,rgba(47,20,77,.94),rgba(61,28,89,.77)),linear-gradient(140deg,rgba(233,60,126,.2),rgba(82,77,216,.2)),url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=75")}.hero p{font-size:16px}.panel{padding:21px}.hero-tags{gap:6px}.score{flex-wrap:wrap}}
+@media(max-width:600px){.container{padding:14px 12px 32px}.hero{padding:30px 24px;min-height:360px}.hero::before{background-image:linear-gradient(90deg,rgba(47,20,77,.94),rgba(61,28,89,.77)),linear-gradient(140deg,rgba(233,60,126,.2),rgba(82,77,216,.2)),url("https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/a_vibrant_polished_landing_page_banner_in_portugu.png")}.hero p{font-size:16px}.panel{padding:21px}.hero-tags{gap:6px}.score{flex-wrap:wrap}}
 
 /* Cartaz BellaTech: composição editorial com contraste seguro para leitura */
 .container{max-width:1280px}
 header{gap:16px;margin-bottom:22px}.logo{background:transparent;color:#ef5fbc;font-size:33px;padding:3px 0}header strong{font-size:30px}header small{line-height:1.35;font-size:13px}.header-note{margin-left:auto;background:#f1e4fa;color:#5a2a80;border-radius:20px;padding:9px 14px;font-size:12px;font-weight:750}
 .hero{min-height:680px;padding:48px 52px 128px;background:#35144e;align-items:flex-start}
-.hero::before{background-image:linear-gradient(90deg,rgba(49,20,74,.99) 0%,rgba(55,23,80,.97) 34%,rgba(67,31,87,.75) 59%,rgba(56,22,78,.36) 100%),linear-gradient(160deg,rgba(255,72,141,.15),rgba(255,186,44,.14) 28%,rgba(56,196,134,.12) 60%,rgba(106,70,222,.20) 82%),url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1800&q=85");background-position:center,center,center 43%}
+.hero::before{background-image:linear-gradient(90deg,rgba(49,20,74,.99) 0%,rgba(55,23,80,.97) 34%,rgba(67,31,87,.75) 59%,rgba(56,22,78,.36) 100%),linear-gradient(160deg,rgba(255,72,141,.15),rgba(255,186,44,.14) 28%,rgba(56,196,134,.12) 60%,rgba(106,70,222,.20) 82%),url("https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/a_vibrant_polished_landing_page_banner_in_portugu.png");background-position:center,center,center 43%}
 .hero-content{max-width:650px}.hero .hero-pill{display:inline-block;border:1px solid rgba(255,255,255,.72);border-radius:18px;padding:10px 15px;font-size:15px;letter-spacing:0}
 .hero h1{font-size:clamp(37px,5.1vw,66px);margin:23px 0 22px;max-width:670px;letter-spacing:-1.4px}.hero h1 em{font-style:normal;color:#f78aca}
 .hero p{font-size:19px;line-height:1.6;color:#fff5ff;max-width:610px}
@@ -35,5 +35,20 @@ header{gap:16px;margin-bottom:22px}.logo{background:transparent;color:#ef5fbc;fo
 .hero-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:430px;background:#f38bc8;color:#29133c;text-decoration:none;padding:19px 27px;border-radius:15px;font-size:18px;font-weight:800;box-shadow:0 8px 22px #1f0d2a30}.hero-cta:hover{background:#ffa4d8}.hero-cta:focus-visible{outline:3px solid white;outline-offset:4px}.hero-cta span{font-size:26px}
 .hero-bottom{position:absolute;bottom:24px;left:28px;right:28px;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(246,220,255,.90);backdrop-filter:blur(8px);color:#34154e;border-radius:18px;overflow:hidden}
 .hero-bottom span{padding:20px 15px;text-align:center;font-size:13px;font-weight:750;border-right:1px solid #a985bc}.hero-bottom span:last-child{border-right:0}
-@media(max-width:800px){.hero{min-height:710px;padding:36px 30px 150px}.hero::before{background-image:linear-gradient(90deg,rgba(49,20,74,.98),rgba(55,23,80,.84)),linear-gradient(140deg,rgba(255,82,143,.18),rgba(85,61,200,.20)),url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1100&q=80")}.hero-bottom{grid-template-columns:repeat(2,1fr)}.hero-bottom span:nth-child(2){border-right:0}.hero-bottom span:nth-child(-n+2){border-bottom:1px solid #a985bc}.header-note{display:none}}
+@media(max-width:800px){.hero{min-height:710px;padding:36px 30px 150px}.hero::before{background-image:linear-gradient(90deg,rgba(49,20,74,.98),rgba(55,23,80,.84)),linear-gradient(140deg,rgba(255,82,143,.18),rgba(85,61,200,.20)),url("https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/a_vibrant_polished_landing_page_banner_in_portugu.png")}.hero-bottom{grid-template-columns:repeat(2,1fr)}.hero-bottom span:nth-child(2){border-right:0}.hero-bottom span:nth-child(-n+2){border-bottom:1px solid #a985bc}.header-note{display:none}}
 @media(max-width:480px){.hero{padding:28px 22px 150px;min-height:760px}.hero h1{font-size:36px;letter-spacing:-.5px}.hero p{font-size:16px}.hero-benefits li{font-size:14px}.hero-cta{font-size:16px;padding:16px 18px}.hero-bottom{left:12px;right:12px;bottom:12px}.hero-bottom span{padding:13px 9px;font-size:11px}}
+
+/* Imagem aprovada BellaTech: recorte apenas da fotografia, sem duplicar o texto do cartaz */
+.hero{background:#35144e;isolation:isolate}
+.hero::before{content:"";position:absolute;top:0;bottom:0;left:43%;right:0;inset:auto 0 0 43%;height:100%;z-index:-2;background-image:url("https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/a_vibrant_polished_landing_page_banner_in_portugu.png");background-size:auto 100%;background-repeat:no-repeat;background-position:right center;opacity:.90}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#35144e 0%,#35144e 35%,rgba(53,20,78,.95) 44%,rgba(53,20,78,.40) 66%,rgba(53,20,78,.06) 100%)}
+.hero-content{position:relative;z-index:1}
+.hero-bottom{z-index:1}
+@media(max-width:800px){
+.hero::before{left:28%;background-size:auto 100%;background-position:right center;opacity:.60}
+.hero::after{background:linear-gradient(90deg,rgba(53,20,78,.98),rgba(53,20,78,.90) 52%,rgba(53,20,78,.57))}
+}
+@media(max-width:480px){
+.hero::before{left:15%;opacity:.38}
+.hero::after{background:linear-gradient(90deg,rgba(53,20,78,.97),rgba(53,20,78,.82))}
+}
