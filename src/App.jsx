@@ -40,8 +40,8 @@ function AudioControls({en,pt}) {
   const selectVoice=()=>{
    const voices=synth.getVoices();
    const matching=voices.filter(v=>normalize(v.lang).startsWith(lang.slice(0,2).toLowerCase()));
-   const femaleHints=/female|feminina|woman|mulher|samantha|victoria|karen|moira|tessa|ava|allison|susan|zira|jenny|aria|sonia|natasha|joana|luciana|francisca|helena|maria|paulina|camila|google português do brasil|google us english/i;
-   const maleHints=/male|masculin|daniel|david|mark|alex|fred|jorge|felipe|ricardo|pedro|carlos/i;
+   const femaleHints=/female|feminina|woman|mulher|samantha|victoria|karen|moira|tessa|ava|allison|susan|zira|jenny|aria|sonia|natasha|joana|luciana|francisca|helena|maria|paulina|camila/i;
+   const maleHints=/(^|[^a-z])male([^a-z]|$)|masculin|daniel|david|mark|alex|fred|jorge|felipe|ricardo|pedro|carlos/i;
    const ranked=matching.map(v=>({voice:v,score:(normalize(v.lang)===normalize(lang)?5:0)+(femaleHints.test(v.name)?20:0)-(maleHints.test(v.name)?20:0)})).sort((a,b)=>b.score-a.score);
    return ranked.find(v=>v.score>=20)?.voice||null;
   };
