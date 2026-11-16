@@ -59,9 +59,9 @@ export default function App() {
     } catch(error){setErr(error.message || 'Falha na solicitação.');} finally{setBusy(false);}
   }
   return <main className="container">
-    <header><div className="logo">✦</div><div><strong>BellaTech</strong><small>Desenvolvimento profissional e inglês para oportunidades</small></div></header>
-    <section className="hero"><div className="hero-content"><span>✦ INTERVIEW COACH • DISCIPLINA 01</span><h1>Pratique inglês para entrevistas de emprego.</h1><p>Aprenda a apresentar suas habilidades, praticar respostas e se preparar para oportunidades de carreira.</p><div className="hero-tags"><span>✓ Traduções e exemplos</span><span>✓ No seu ritmo</span><span>✓ Ambiente acolhedor</span></div></div></section>
-    <section className="panel" aria-label="Disciplina de inglês para entrevistas">
+    <header><div className="logo">✦</div><div><strong>BellaTech</strong><small>Desenvolvimento profissional<br/>para mulheres LGBTQIAPN+</small></div><span className="header-note">Mulheres cis e trans são bem-vindas</span></header>
+    <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><a className="hero-cta" href="#disciplina">Começar treino gratuito <span aria-hidden="true">→</span></a></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>
+    <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
       <p className="eyebrow">MY FIRST JOB INTERVIEW</p><h2>Minha primeira entrevista em inglês</h2>
       <p>Disciplina demonstrativa: três perguntas de prática e uma avaliação final com dez questões. Você precisa acertar pelo menos sete para avançar. O resultado mede apenas este conteúdo, não sua proficiência geral.</p>
       {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setShowExample(false);setStage('practice');}}>
