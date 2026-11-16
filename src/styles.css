@@ -230,3 +230,11 @@ button.hero-cta{font:inherit;cursor:pointer;border:0;text-decoration:none;displa
 .hero .hero-cta .hero-cta-arrow{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#fff0ff;color:#82229a;font-size:29px;font-weight:800;letter-spacing:0;flex:none}
 @media(max-width:480px){.hero .hero-cta{min-height:65px;padding:9px 10px 9px 14px;gap:8px;font-size:14px}.hero .hero-cta .hero-cta-rocket{font-size:23px}.hero .hero-cta .hero-cta-arrow{width:40px;height:40px;font-size:24px}}
 @media(prefers-reduced-motion:reduce){.hero .hero-cta{transition:none}.hero .hero-cta:hover{transform:none}}
+
+/* Estrelas cadentes acionadas pelo mouse apenas no hero da página inicial */
+.hero .shooting-stars{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;border-radius:inherit}
+.hero .shooting-star{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 7px 3px #ffb5e9,0 0 18px 6px rgba(245,91,214,.7);transform:translate(-50%,-50%);animation:bellatech-shooting-star .85s ease-out forwards;will-change:transform,opacity}
+.hero .shooting-star::before{content:"";position:absolute;right:3px;top:3px;width:95px;height:3px;border-radius:99px;background:linear-gradient(90deg,transparent,rgba(255,146,226,.25),#ffd6f7);transform-origin:right center;transform:rotate(-32deg)}
+.hero .shooting-star::after{content:"✦";position:absolute;left:-3px;top:-8px;font-size:17px;color:#fff;filter:drop-shadow(0 0 5px #ffc3f0)}
+@keyframes bellatech-shooting-star{0%{opacity:0;transform:translate(-32px,24px) scale(.45)}18%{opacity:1}75%{opacity:.9}100%{opacity:0;transform:translate(95px,-75px) scale(.2)}}
+@media(prefers-reduced-motion:reduce){.hero .shooting-stars{display:none}}
