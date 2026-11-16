@@ -166,7 +166,7 @@ export default function App() {
         </article>)}</div>
         <div className="module-extras">
          <article className="module-extra-card">
-          <div className="module-extra-cover final-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/bellatech_capa_desafio_final.jpg" alt="Participante comemorando a conclusão de sua jornada profissional" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
+          <div className="module-extra-cover final-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/certificado%20final.png" alt="Participante comemorando a conclusão de sua jornada profissional" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
           <div className="module-extra-body">
            <span className={'module-status '+(unlocked===4?'status-ready':'status-locked')}>{unlocked===4?'✦ Disponível':'🔒 Bloqueado'}</span>
            <strong>🏆 Desafio final</strong>
@@ -175,7 +175,7 @@ export default function App() {
           </div>
          </article>
          <article className="module-extra-card">
-          <div className="module-extra-cover community-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/bellatech_capa_comunidade.jpg" alt="Mulheres de diferentes idades conversando e compartilhando experiências profissionais" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
+          <div className="module-extra-cover community-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/comunidade.png" alt="Mulheres de diferentes idades conversando e compartilhando experiências profissionais" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
           <div className="module-extra-body">
            <span className="module-status status-community">🤝 Em planejamento</span>
            <strong>Comunidade BellaTech</strong>
