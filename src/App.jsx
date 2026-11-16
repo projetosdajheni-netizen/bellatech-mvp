@@ -102,7 +102,7 @@ async function authRequest(endpoint,body,token){
  return data;
 }
 async function progressRequest(token,method,body){
- const response=await fetch(SB_URL+'/rest/v1/learning_progress'+(method==='GET'?'?select=selected_path,unlocked_modules,last_module,quiz_score,quiz_attempts':''),{
+ const response=await fetch(SB_URL+'/rest/v1/learning_progress'+(method==='GET'?'?select=selected_path,unlocked_modules,last_module,quiz_score,quiz_attempts,certificate_name':''),{
  method,headers:{...authHeaders,Authorization:'Bearer '+token,...(method==='POST'?{Prefer:'resolution=merge-duplicates,return=representation'}:{})},...(body?{body:JSON.stringify(body)}:{})});
  if(!response.ok){const error=await response.json().catch(()=>({}));throw new Error(error.message||'Erro ao sincronizar progresso.');}
  return response.json().catch(()=>[]);
@@ -127,6 +127,9 @@ export default function App() {
   const [progressLoaded,setProgressLoaded]=useState(false);
   const [hasSavedJourney,setHasSavedJourney]=useState(false);
   const [savedScore,setSavedScore]=useState(null);
+  const [certificateName,setCertificateName]=useState('');
+  const [certificateBusy,setCertificateBusy]=useState(false);
+  const [certificateError,setCertificateError]=useState('');
   const [savedAttempts,setSavedAttempts]=useState(0);
   const saveQueue=useRef(Promise.resolve());
   const latestProgress=useRef(null);
@@ -173,7 +176,7 @@ export default function App() {
     }
     if(token)await authRequest('logout',{},token).catch(()=>{});
     sessionStorage.removeItem('bellatech_auth');progressReady.current=false;setProgressLoaded(false);
-    setSession(null);setSyncStatus('');setHasSavedJourney(false);
+    setSession(null);setSyncStatus('');setHasSavedJourney(false);setCertificateName('');setSavedScore(null);
     setUnlocked(0);setModuleIndex(0);setQuizAnswers({});setAttempts(0);setPath('fundamentos');
     setStage('home');
   }
@@ -254,12 +257,14 @@ export default function App() {
         setModuleIndex(row.last_module||0);
         setAttempts(row.quiz_attempts||0);
         setSavedScore(row.quiz_score);
+        setCertificateName(row.certificate_name||'');
         setSavedAttempts(row.quiz_attempts||0);
         setHasSavedJourney(true);
         setSyncStatus('Progresso recuperado da nuvem.');
       }else{
         setHasSavedJourney(false);
         setSavedScore(null);
+        setCertificateName('');
         setSavedAttempts(0);
         setSyncStatus('Sua jornada está pronta para ser salva na nuvem.');
       }
@@ -275,7 +280,7 @@ export default function App() {
       user_id:session.user.id,selected_path:path,unlocked_modules:unlocked,
       last_module:Math.min(moduleIndex,3),
       quiz_score:stage==='result'?score:savedScore,
-      quiz_attempts:attempts,updated_at:new Date().toISOString()
+      quiz_attempts:attempts,certificate_name:certificateName.trim()||null,updated_at:new Date().toISOString()
     };
     latestProgress.current=payload;
     const timer=setTimeout(()=>{
@@ -284,7 +289,31 @@ export default function App() {
         .catch(error=>setSyncStatus('Erro ao salvar progresso: '+error.message));
     },450);
     return ()=>clearTimeout(timer);
-  },[session?.access_token,progressLoaded,path,unlocked,moduleIndex,attempts,stage,savedScore]);
+  },[session?.access_token,progressLoaded,path,unlocked,moduleIndex,attempts,stage,savedScore,certificateName]);
+  async function issueCertificate(){
+    setCertificateError('');
+    if(!session?.access_token){setCertificateError('Entre na sua conta para emitir o certificado.');return;}
+    if(!progressLoaded){setCertificateError('Aguarde a sincronização da sua conta.');return;}
+    if(unlocked<4||Math.max(savedScore??0,stage==='result'?score:0)<7){setCertificateError('O certificado exige os quatro módulos concluídos e nota mínima 7/10 no Desafio Final.');return;}
+    const name=certificateName.trim().replace(/\\s+/g,' ');
+    if(name.length<2||name.length>120){setCertificateError('Informe seu nome para o certificado (2 a 120 caracteres).');return;}
+    setCertificateBusy(true);
+    try{
+      const grade=Math.max(savedScore??0,stage==='result'?score:0);
+      await queueProgressSave(session.access_token,{
+        user_id:session.user.id,selected_path:path,unlocked_modules:unlocked,last_module:Math.min(moduleIndex,3),
+        quiz_score:grade,quiz_attempts:attempts,certificate_name:name,updated_at:new Date().toISOString()
+      });
+      setSavedScore(grade);setHasSavedJourney(true);
+      const safe=value=>value.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+      const issued=new Date().toLocaleDateString('pt-BR');
+      const popup=window.open('','_blank');
+      if(!popup){setCertificateError('Permita pop-ups para abrir o certificado e salvá-lo como PDF.');return;}
+      popup.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Certificado BellaTech</title><style>@page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f9f2fc;color:#48235f}.certificate{height:185mm;border:4px solid #b67acb;padding:20mm 17mm;text-align:center;position:relative;background:#fffafd}.brand{font-size:38px;font-weight:800}.brand span{color:#c34aa8}.rainbow{display:flex;height:7px;margin:12px auto 18px;width:75%;opacity:.7}.rainbow i{flex:1}.seal{font-size:42px}h1{font-size:27px;margin:10px 0 18px;letter-spacing:2px}.name{font-size:31px;font-weight:700;border-bottom:1px solid #d8b5e3;display:inline-block;padding:4px 30px;margin:12px 0}.description{max-width:700px;margin:12px auto;line-height:1.7;font-size:17px}.details{margin:23px 0 14px;font-size:14px}.fine{font-size:11px;color:#796987;margin-top:15px}.print{position:fixed;right:12px;top:12px;padding:12px;border:0;border-radius:9px;background:#82449f;color:white;cursor:pointer}@media print{.print{display:none}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><button class="print" onclick="window.print()">Salvar como PDF / Imprimir</button><main class="certificate"><div class="brand">Bella<span>Tech</span> ✦</div><div class="rainbow"><i style="background:#e76b79"></i><i style="background:#eea05e"></i><i style="background:#e8c968"></i><i style="background:#7eae85"></i><i style="background:#779ed1"></i><i style="background:#ae83cb"></i></div><div class="seal">✦</div><h1>CERTIFICADO DE CONCLUSÃO</h1><div>Certificamos que</div><div class="name">${safe(name)}</div><p class="description">concluiu a jornada demonstrativa de Inglês Profissional da BellaTech, composta por quatro módulos de aprendizagem e pelo Desafio Final, com aproveitamento de <strong>${grade}/10</strong>.</p><div class="details">Data de emissão: ${issued} &nbsp; • &nbsp; BellaTech — Projeto acadêmico</div><p class="fine">Documento demonstrativo de conclusão. Não constitui certificação oficial de proficiência em inglês.</p></main></body></html>`);
+      popup.document.close();
+    }catch(error){setCertificateError('Não foi possível salvar os dados do certificado: '+error.message);}
+    finally{setCertificateBusy(false);}
+  }
   function requestJourneyStart(){
     if(session){setStage('intro');window.scrollTo({top:0,behavior:'smooth'});return;}
     setJourneyGateOpen(true);
@@ -433,12 +462,14 @@ export default function App() {
         <p className="progress">DISCIPLINA 01 • RESULTADO</p><h3>{passed?'Parabéns! Disciplina concluída.':'Você está progredindo. Vamos revisar?'}</h3>
         <div className="score"><strong>{score}/10</strong><span>{score*10}% de acertos • {attempts}ª tentativa</span></div>
         <p>{passed?'Você atingiu a meta de 70%. A próxima disciplina ficará disponível quando for criada.':'Para desbloquear a próxima disciplina, é necessário atingir 70%. Revise as explicações e tente novamente.'}</p>
+        {passed&&<section className="certificate-access"><h3>🎓 Certificado de conclusão</h3>{session?<><p>Você alcançou a nota mínima! Informe o nome que deverá aparecer no certificado.</p><label htmlFor="certificate-name">Nome no certificado</label><input id="certificate-name" type="text" minLength={2} maxLength={120} autoComplete="name" value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando certificado...':'Emitir certificado em PDF'}</button></>:<><p>Entre na sua conta para salvar o resultado e emitir o certificado.</p><button type="button" onClick={()=>{setAuthMode('login');setAuthOpen(true);}}>Entrar ou criar conta</button></>}{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
         <h3>Revisão das respostas</h3>
         {quiz.map((item,i)=><div className="review-item" key={i}><strong>{i+1}. {quizAnswers[i]===item.correct?'✓ Correta':'✕ Revisar'}</strong><p>{item.q}</p><p><strong>Resposta esperada:</strong> {item.opts[item.correct]}</p><small>{item.why}</small></div>)}
         <p className="privacy-note">Com uma conta, a pontuação e os módulos concluídos são sincronizados na nuvem. As respostas escritas não são armazenadas.</p>
         <div className="actions">{!passed && <button type="button" onClick={()=>{setQuizAnswers({});setStage('quiz');}}>Refazer avaliação</button>}<button type="button" className="secondary" onClick={restart}>Voltar ao início</button></div>
       </div>}
     </section>}
+    {stage==='home'&&session&&hasSavedJourney&&unlocked>=4&&(savedScore??0)>=7&&<section className="certificate-access certificate-home"><h3>🎓 Seu certificado BellaTech</h3><p>Você concluiu o Desafio Final com nota suficiente para emitir seu certificado.</p><label htmlFor="certificate-home-name">Nome no certificado</label><input id="certificate-home-name" type="text" maxLength={120} value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando...':'Emitir certificado em PDF'}</button>{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
     {stage==='home' && <div className="home-sections">
       <section className="home-value-section" aria-labelledby="home-value-title">
         <div className="home-section-heading"><span className="home-kicker">POR QUE BELLATECH?</span><h2 id="home-value-title">Inglês que faz sentido para sua carreira</h2><p>Uma experiência prática para desenvolver comunicação profissional, no seu ritmo e com situações do mundo do trabalho.</p></div>
