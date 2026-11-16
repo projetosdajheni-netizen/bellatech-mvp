@@ -168,3 +168,10 @@ header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
 .module-map .module-locked{background:#faf9fb}
 .module-map .module-locked .module-details strong{color:#6b6471}
 @media(max-width:700px){.module-map{grid-template-columns:1fr;gap:16px}.module-map .module-cover{aspect-ratio:2.3/1}}
+
+/* Navegação entre apresentação institucional e ambiente de aprendizagem */
+.journey-navigation{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:20px 0 14px}
+.journey-navigation span{font-weight:700;color:#63358c;font-size:14px}
+.journey-navigation button{width:auto;min-height:42px}
+button.hero-cta{font:inherit;cursor:pointer;border:0;text-decoration:none;display:inline-flex;align-items:center;gap:12px}
+@media(max-width:520px){.journey-navigation{align-items:flex-start;flex-direction:column}.journey-navigation button{width:auto}}
