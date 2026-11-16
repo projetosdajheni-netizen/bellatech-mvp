@@ -340,3 +340,29 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
  .home-container .hero h1{font-size:29px}
  .home-container .hero-mobile-photo{height:205px}
 }
+
+/* Conta e progresso sincronizado */
+.brand-header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.auth-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.auth-header-actions button{white-space:nowrap;font-size:13px}
+.auth-user-label{font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-overlay{position:fixed;inset:0;z-index:1000;background:rgba(22,12,37,.68);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
+.auth-dialog{position:relative;background:#fff;color:#32213f;width:min(100%,440px);padding:30px;border-radius:22px;box-shadow:0 20px 65px rgba(0,0,0,.28)}
+.auth-dialog h2{margin:0 30px 9px 0;font-size:25px}
+.auth-dialog p{font-size:14px}
+.auth-dialog form{display:flex;flex-direction:column;gap:10px}
+.auth-dialog form input{width:100%;box-sizing:border-box}
+.auth-dialog form button{margin-top:7px}
+.auth-dialog .auth-close{position:absolute;right:16px;top:14px;padding:7px 12px}
+.auth-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.auth-links button{font-size:12px;padding:8px 10px}
+.auth-error{color:#aa1835;font-weight:600}
+.sync-notice{font-size:12px;color:#70418a;text-align:center;margin:5px 0 12px}
+@media(max-width:700px){
+ .brand-header{align-items:flex-start;gap:8px}
+ .brand-home-link{min-width:0}
+ .auth-header-actions{max-width:42%;gap:5px}
+ .auth-header-actions button{font-size:11px;padding:8px 9px;white-space:normal}
+ .auth-user-label{font-size:10px;max-width:120px}
+ .auth-dialog{padding:24px 18px}
+}
