@@ -164,8 +164,26 @@ export default function App() {
           </div>
           <div className="module-card-action">{i<=unlocked?<button type="button" onClick={()=>openModule(i)}>{i<unlocked?'Revisar módulo':'Começar módulo →'}</button>:<button type="button" disabled aria-label={'Módulo '+(i+1)+' bloqueado'}>🔒 Bloqueado</button>}</div>
         </article>)}</div>
-        <div className="module-final"><strong>🏆 Desafio final</strong><p>{unlocked===4?'Você concluiu os quatro módulos! A avaliação opcional está disponível.':'Desbloqueado após concluir os quatro módulos.'}</p>
-        {unlocked===4?<button type="button" onClick={()=>setStage('evaluation-intro')}>Ir para avaliação opcional →</button>:<span aria-label="Desafio final bloqueado">🔒 Bloqueado</span>}</div>
+        <div className="module-extras">
+         <article className="module-extra-card">
+          <div className="module-extra-cover final-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/bellatech_capa_desafio_final.jpg" alt="Participante comemorando a conclusão de sua jornada profissional" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
+          <div className="module-extra-body">
+           <span className={'module-status '+(unlocked===4?'status-ready':'status-locked')}>{unlocked===4?'✦ Disponível':'🔒 Bloqueado'}</span>
+           <strong>🏆 Desafio final</strong>
+           <p>{unlocked===4?'Você concluiu os quatro módulos! A avaliação opcional está disponível.':'Desbloqueado após concluir os quatro módulos.'}</p>
+           {unlocked===4?<button type="button" onClick={()=>setStage('evaluation-intro')}>Ir para avaliação opcional →</button>:<button type="button" disabled>🔒 Bloqueado</button>}
+          </div>
+         </article>
+         <article className="module-extra-card">
+          <div className="module-extra-cover community-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/bellatech_capa_comunidade.jpg" alt="Mulheres de diferentes idades conversando e compartilhando experiências profissionais" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
+          <div className="module-extra-body">
+           <span className="module-status status-community">🤝 Em planejamento</span>
+           <strong>Comunidade BellaTech</strong>
+           <p>Um espaço futuro para trocar experiências, criar conexões e compartilhar oportunidades profissionais.</p>
+           <span className="module-extra-note">Funcionalidade ainda não disponível neste protótipo.</span>
+          </div>
+         </article>
+        </div>
         <button type="button" className="secondary" onClick={()=>setStage('paths')}>Voltar às trilhas</button>
         <p className="privacy-note">O progresso fica apenas nesta sessão. Atualizar ou fechar a página reinicia os módulos. Os conteúdos são demonstrativos e ainda não são personalizados por trilha.</p>
       </div>}
