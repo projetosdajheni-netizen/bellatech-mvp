@@ -70,3 +70,24 @@ header{gap:16px;margin-bottom:22px}.logo{background:transparent;color:#ef5fbc;fo
 .brand-home-link:hover{opacity:.82}
 .brand-home-link:focus-visible{outline:3px solid #8b4cc2;outline-offset:5px}
 @media(max-width:480px){.brand-home-link{gap:10px}}
+
+
+/* Preserva exatamente a composição da marca ao torná-la clicável. */
+header.brand-header{display:flex;align-items:center;gap:13px}
+header.brand-header > a.brand-home-link,
+header.brand-header > a.brand-home-link:link,
+header.brand-header > a.brand-home-link:visited{
+ display:inline-flex!important;flex-direction:row!important;align-items:center!important;
+ gap:13px;max-width:100%;text-decoration:none!important;color:inherit;
+}
+header.brand-header > a.brand-home-link *,
+header.brand-header > a.brand-home-link:hover *,
+header.brand-header > a.brand-home-link:visited *{
+ text-decoration:none!important;
+}
+header.brand-header > a.brand-home-link .logo{flex:0 0 auto;display:block;padding:3px 0;line-height:1}
+header.brand-header > a.brand-home-link .brand-copy{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+header.brand-header > a.brand-home-link .brand-name{display:block;white-space:nowrap;color:#50217b}
+header.brand-header > a.brand-home-link .brand-subtitle{color:#756784}
+header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
+@media(max-width:480px){header.brand-header > a.brand-home-link{gap:10px}}
