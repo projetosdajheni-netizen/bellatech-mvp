@@ -44,30 +44,13 @@ const learningModules=[
   {en:'Tell me about yourself.',pt:'Fale um pouco sobre você.',q:'Qual resposta apresenta você?',opts:['My name is Ana. I am learning English.','I no name English.','Technology is name.'],correct:0,why:'Uma apresentação pode começar com seu nome e o que está aprendendo.'},
   {en:'Why are you interested in technology?',pt:'Por que você tem interesse em tecnologia?',q:'Qual resposta demonstra interesse profissional?',opts:['I never want to learn.','I want to learn and develop my skills.','I am not interested.'],correct:1,why:'A resposta expressa interesse em aprender e desenvolver habilidades.'}]}
 ];
+const modulePhotos=[["dMiw0B4v6iQ","Mulher em videochamada profissional"],["iQqRM0XJvn8","Mulher desenvolvedora trabalhando com código"],["gZvyuZ4fsfw","Mulheres de diferentes gerações conversando em atividade colaborativa"],["9TF9pMrCFMo","Duas mulheres em uma entrevista profissional"]];
 function ModuleCover({variant,locked}){
- const motifs=['Hi!','</>','★','?'];
- return <div className={'module-cover module-cover-'+variant+(locked?' cover-locked':'')} aria-hidden="true">
-  <svg viewBox="0 0 520 260" preserveAspectRatio="xMidYMid slice" focusable="false">
-   <circle cx="430" cy="30" r="112" fill="#ffffff" opacity=".11"/>
-   <circle cx="82" cy="242" r="126" fill="#ffffff" opacity=".08"/>
-   <rect x="245" y="65" width="205" height="135" rx="14" fill="#ffffff" opacity=".92"/>
-   <rect x="260" y="82" width="175" height="101" rx="7" fill="#eee8fa"/>
-   <rect x="276" y="101" width="75" height="9" rx="4" fill="#bba2d9"/>
-   <rect x="276" y="119" width="125" height="7" rx="3" fill="#d3c4e6"/>
-   <rect x="276" y="135" width="103" height="7" rx="3" fill="#d3c4e6"/>
-   <rect x="300" y="200" width="96" height="9" rx="4" fill="#ffffff" opacity=".82"/>
-   <path d="M160 168 Q164 125 196 122 Q229 126 234 169 L251 260 L133 260Z" fill="#32214f"/>
-   <ellipse cx="196" cy="93" rx="38" ry="48" fill="#2b1c40"/>
-   <ellipse cx="197" cy="100" rx="28" ry="35" fill="#d99c7c"/>
-   <path d="M165 87 Q168 42 201 47 Q235 48 230 89 Q216 68 190 69 Q181 87 165 87Z" fill="#2b1c40"/>
-   <path d="M171 153 Q197 176 223 153 L244 260 L147 260Z" fill="#f5c0d8"/>
-   <rect x="273" y="149" width="116" height="23" rx="11" fill="#a07ac5"/>
-   <text x="331" y="165" textAnchor="middle" fill="#ffffff" fontSize="15" fontFamily="Arial,sans-serif" fontWeight="bold">{motifs[variant]}</text>
-   {variant===1&&<><rect x="354" y="42" width="88" height="34" rx="12" fill="#f9b8d8"/><text x="398" y="65" textAnchor="middle" fontSize="18" fill="#592c79" fontWeight="bold">CODE</text></>}
-   {variant===2&&<><circle cx="410" cy="208" r="25" fill="#f9b8d8"/><path d="M399 208l8 8 15-19" stroke="#592c79" strokeWidth="6" fill="none" strokeLinecap="round"/></>}
-   {variant===3&&<><rect x="355" y="32" width="88" height="38" rx="18" fill="#f9b8d8"/><text x="399" y="58" textAnchor="middle" fontSize="18" fill="#592c79" fontWeight="bold">Hello!</text></>}
-  </svg>
-  {locked&&<span className="module-cover-lock">🔒</span>}
+ const [id,description]=modulePhotos[variant];
+ return <div className={'module-cover module-photo-cover module-cover-'+variant+(locked?' cover-locked':'')}>
+  <img src={'https://unsplash.com/photos/'+id+'/download?force=true&w=1000'} alt={description} loading="lazy" referrerPolicy="no-referrer"/>
+  <span className="module-photo-tint" aria-hidden="true"></span>
+  {locked&&<span className="module-cover-lock" aria-label="Módulo bloqueado">🔒</span>}
  </div>;
 }
 function AudioControls({en,pt}) {
