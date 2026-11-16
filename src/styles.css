@@ -296,3 +296,27 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .home-container .hero .hero-cta{margin-top:8px}
 @media(max-width:1100px){.home-container .hero-content{width:54%;max-width:570px}.home-container .hero h1{font-size:clamp(36px,4vw,51px)}.home-container .hero::after{background:linear-gradient(90deg,#35144e 0%,rgba(53,20,78,.98) 40%,rgba(53,20,78,.72) 63%,rgba(53,20,78,.2) 100%)}}
 @media(max-width:700px){.home-container .hero-content{width:100%;max-width:100%}.home-container .hero h1{font-size:clamp(34px,8vw,46px);max-width:550px}.home-container .hero p{max-width:540px}.home-container .hero::before{left:0;inset:auto 0 0 0;opacity:.30;background-position:right center}.home-container .hero::after{background:linear-gradient(90deg,rgba(53,20,78,.95),rgba(53,20,78,.77))}}
+
+/* Mobile-first refinements: concise hero and original photo visible below CTA */
+.hero-mobile-photo{display:none}
+@media(max-width:700px){
+ .home-container .brand-header{padding-block:6px;margin-bottom:16px}
+ .home-container .hero{display:flex;flex-direction:column;align-items:stretch;min-height:0;height:auto;padding:27px 0 0;border-radius:22px}
+ .home-container .hero::before,.home-container .hero::after{display:none}
+ .home-container .hero-content{width:100%;max-width:none;flex:none;padding:0 23px 25px;position:relative;z-index:2}
+ .home-container .hero .hero-pill{font-size:12px;padding:8px 13px;border-radius:999px}
+ .home-container .hero h1{font-size:clamp(30px,8.3vw,43px);line-height:1.12;letter-spacing:-.035em;margin:20px 0 17px;max-width:100%;text-wrap:balance}
+ .home-container .hero p{font-size:15px;line-height:1.55;margin:0 0 23px;max-width:100%}
+ .home-container .hero .hero-cta{width:100%;max-width:100%;min-height:62px;margin:0;padding:9px 11px 9px 15px;font-size:14px;gap:8px}
+ .home-container .hero .hero-cta .hero-cta-arrow{width:40px;height:40px;font-size:23px}
+ .home-container .hero .hero-cta .hero-cta-rocket{font-size:22px}
+ .home-container .hero-mobile-photo{display:block;position:relative;z-index:1;width:100%;height:clamp(215px,56vw,345px);background-image:linear-gradient(180deg,rgba(53,20,78,.14),rgba(53,20,78,.05)),url("https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/Retrato%20de%20Quatro%20Mulheres%20com%20Bandeira%20Arco-%C3%8Dris.png");background-size:cover;background-position:center 42%;background-repeat:no-repeat}
+ .home-container .hero-bottom{position:relative;inset:auto;left:auto;right:auto;bottom:auto;z-index:2;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:0 0 20px 20px;background:#efd6f5;backdrop-filter:none}
+ .home-container .hero-bottom span{font-size:11px;line-height:1.35;letter-spacing:0;padding:12px 8px;min-width:0}
+}
+@media(max-width:390px){
+ .home-container .hero-content{padding-inline:18px}
+ .home-container .hero h1{font-size:30px}
+ .home-container .hero .hero-cta{font-size:13px}
+ .home-container .hero-mobile-photo{height:215px}
+}
