@@ -2,12 +2,24 @@
 // No answers are persisted by this endpoint. Keep provider keys server-side.
 const MODEL='gemini-2.5-flash-lite';
 const limits=new Map();
+// Public diagnostics contain only a controlled code; never return provider payloads or credentials.
+function providerFailure(status){
+  if(status===429)return {status:429,code:'AI_QUOTA',error:'O limite de uso do Gemini foi atingido. Tente novamente mais tarde.'};
+  if(status===401||status===403)return {status:503,code:'AI_PROVIDER_AUTH',error:'A configuração de acesso ao Gemini precisa ser revisada.'};
+  if(status===404)return {status:503,code:'AI_MODEL_UNAVAILABLE',error:'O modelo de IA configurado não está disponível. É necessário revisar o modelo.'};
+  if(status===400||status===422)return {status:503,code:'AI_PROVIDER_REQUEST',error:'O Gemini rejeitou a solicitação. É necessário revisar a integração.'};
+  if(status>=500)return {status:503,code:'AI_PROVIDER_UNAVAILABLE',error:'O serviço de IA está temporariamente indisponível.'};
+  return {status:503,code:'AI_PROVIDER_ERROR',error:'Não foi possível gerar o feedback com IA agora.'};
+}
+function diagnosticLog(code,status){
+  console.error('BELLATECH_COACH_DIAGNOSTIC',JSON.stringify({code,provider_http_status:status??null,model:MODEL}));
+}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Robots-Tag','noindex');
   if(req.method!=='POST')return res.status(405).json({error:'Método não permitido.'});
   if(process.env.BELLATECH_AI_ENABLED!=='true'||!process.env.GEMINI_API_KEY)
-    return res.status(503).json({error:'AI Coach ainda não está habilitado. Estamos preparando a demonstração.'});
+    return res.status(503).json({code:'AI_DISABLED',error:'AI Coach ainda não está habilitado. Estamos preparando a demonstração.'});
   const token=/^Bearer (.+)$/i.exec(req.headers.authorization||'')?.[1];
   if(!token||token.length>4096)return res.status(401).json({error:'Entre na sua conta para experimentar a IA.'});
   const supabaseUrl=process.env.SUPABASE_URL;
@@ -48,14 +60,21 @@ export default async function handler(req,res){
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',temperature:0.3,maxOutputTokens:500}}),
       signal:AbortSignal.timeout(18000)
     });
-    if(!ai.ok)return res.status(503).json({error:'A IA não respondeu agora. Tente novamente mais tarde.'});
+    if(!ai.ok){
+      const failure=providerFailure(ai.status);
+      diagnosticLog(failure.code,ai.status);
+      return res.status(failure.status).json({code:failure.code,error:failure.error});
+    }
     const result=await ai.json();
     const raw=result?.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('')||'';
     const data=JSON.parse(raw);
     if(!['positivo','melhoria','exemplo'].every(k=>typeof data[k]==='string'&&data[k].length>0&&data[k].length<500))
       throw new Error('INVALID_AI_RESPONSE');
     return res.status(200).json({positivo:data.positivo,melhoria:data.melhoria,exemplo:data.exemplo});
-  }catch{
-    return res.status(503).json({error:'Não foi possível gerar o feedback agora. Tente novamente.'});
+  }catch(error){
+    const code=error?.name==='TimeoutError'?'AI_TIMEOUT':error?.message==='INVALID_AI_RESPONSE'||error instanceof SyntaxError?'AI_INVALID_RESPONSE':'AI_INTERNAL_ERROR';
+    diagnosticLog(code,null);
+    const message=code==='AI_TIMEOUT'?'A IA demorou demais para responder. Tente novamente.':code==='AI_INVALID_RESPONSE'?'O Gemini respondeu em um formato inesperado. É necessário revisar a integração.':'Não foi possível gerar o feedback agora. Tente novamente.';
+    return res.status(503).json({code,error:message});
   }
 }
