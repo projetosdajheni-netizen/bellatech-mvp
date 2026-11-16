@@ -13,12 +13,28 @@ const exercises = [
   { area:'tecnologia', level:'basico', en:'How do you learn a new technology?', pt:'Como você aprende uma tecnologia nova?', sample:'I read the documentation, practice with a small project and ask for feedback.', tip:'Mostre curiosidade e uma estratégia de aprendizagem.' },
   { area:'atendimento', level:'basico', en:'Tell me about a time you worked with a team.', pt:'Conte sobre uma situação em que trabalhou em equipe.', sample:'In a group project, I shared updates and listened to my colleagues. We completed the task together.', tip:'Mostre colaboração com um exemplo real, mesmo fora de um emprego.' }
 ];
+// Avaliação demonstrativa objetiva: 10 questões, 1 ponto por acerto.
+const quiz = [
+ {q:'O que significa “Tell me about yourself”?',opts:['Fale um pouco sobre você.','Qual é seu endereço?','Qual é seu salário?'],correct:0,why:'É um convite para apresentar seu perfil e experiência profissional.'},
+ {q:'Qual frase apresenta uma habilidade profissional?',opts:['I am organized and responsible.','I am twenty years old.','I live near the office.'],correct:0,why:'Organized e responsible são qualidades relacionadas ao trabalho.'},
+ {q:'O que significa “What are your strengths?”',opts:['Quais são seus pontos fortes?','Qual é sua disponibilidade?','Qual foi seu último emprego?'],correct:0,why:'Strengths significa pontos fortes.'},
+ {q:'Qual frase expressa interesse pela oportunidade?',opts:['I do not want to learn.','I want to develop my skills.','I never work with others.'],correct:1,why:'Develop my skills indica desejo de desenvolver competências.'},
+ {q:'Qual é a tradução de “teamwork”?',opts:['Pontualidade','Trabalho em equipe','Entrevista'],correct:1,why:'Teamwork é trabalho em equipe.'},
+ {q:'Qual ordem forma uma frase correta?',opts:['Responsible am I.','I responsible am.','I am responsible.'],correct:2,why:'Em frases simples, usamos sujeito + verbo to be + adjetivo.'},
+ {q:'O que a pessoa quer saber com “Why do you want this job?”',opts:['Por que você quer este emprego?','Quando você nasceu?','Onde você estudou?'],correct:0,why:'Why significa por que; want this job significa querer este emprego.'},
+ {q:'Qual resposta é adequada para “How do you work in a team?”',opts:['I listen and share ideas.','I never listen to people.','I refuse to help anyone.'],correct:0,why:'A resposta demonstra colaboração e comunicação.'},
+ {q:'Complete: “I ___ motivated to learn.”',opts:['is','am','are'],correct:1,why:'Com I, a forma correta do verbo to be é am.'},
+ {q:'Qual resposta descreve uma experiência de forma clara?',opts:['I good job yesterday.','I worked on a group project and helped organize tasks.','Me project good.'],correct:1,why:'A frase apresenta uma atividade e a contribuição da pessoa.'}
+];
 const levels = {zero:'Começando do zero',iniciante:'Iniciante',basico:'Básico'};
 const areas = {geral:'Qualquer área',tecnologia:'Tecnologia',atendimento:'Atendimento',administracao:'Administração'};
 export default function App() {
   const [area,setArea] = useState('geral');
   const [level,setLevel] = useState('zero');
-  const [started,setStarted] = useState(false);
+  const [stage,setStage] = useState('intro');
+  const [practiceAnswers,setPracticeAnswers] = useState([]);
+  const [quizAnswers,setQuizAnswers] = useState({});
+  const [attempts,setAttempts] = useState(0);
   const [index,setIndex] = useState(0);
   const [answer,setAnswer] = useState('');
   const [showExample,setShowExample] = useState(false);
@@ -28,7 +44,11 @@ export default function App() {
   const [busy,setBusy] = useState(false);
   const available = exercises.filter(q => (q.area === area || q.area === 'geral') && (q.level === level || q.level === 'zero')).slice(0,3);
   const current = available[index] || available[0];
-  function restart(){setStarted(false);setIndex(0);setAnswer('');setShowExample(false);}
+  const score = quiz.reduce((sum,q,i)=>sum+(quizAnswers[i]===q.correct?1:0),0);
+  const passed = score >= 7;
+  function restart(){setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);setAttempts(0);}
+  function advancePractice(){if(!answer.trim())return;setPracticeAnswers(prev=>[...prev,answer.trim()]);setAnswer('');setShowExample(false);if(index+1>=available.length){setStage('quiz');}else{setIndex(i=>i+1);}}
+  function submitQuiz(){if(Object.keys(quizAnswers).length!==quiz.length)return;setAttempts(n=>n+1);setStage('result');}
   async function generate(e) {
     e.preventDefault();setResult(null);setErr('');setBusy(true);
     try {
@@ -39,26 +59,42 @@ export default function App() {
     } catch(error){setErr(error.message || 'Falha na solicitação.');} finally{setBusy(false);}
   }
   return <main className="container">
-    <header><div className="logo">✦</div><div><strong>BellaTech</strong><small>Inglês profissional • IA • oportunidades</small></div></header>
-    <section className="hero"><span>PROTÓTIPO DEMONSTRATIVO</span><h1>Pratique entrevistas em inglês, no seu ritmo.</h1><p>Treine respostas, consulte traduções e ganhe confiança para se preparar para oportunidades profissionais.</p></section>
-    <section className="panel" aria-label="Treinamento de entrevistas">
-      <h2>Experimente o Interview Coach</h2>
-      <p>Este piloto gratuito usa exercícios demonstrativos preparados para o teste. Não avalia sua proficiência nem utiliza IA para corrigir respostas nesta versão.</p>
-      {!started ? <form onSubmit={e=>{e.preventDefault();setIndex(0);setAnswer('');setShowExample(false);setStarted(true);}}>
-        <label htmlFor="area">Área profissional</label>
-        <select id="area" value={area} onChange={e=>setArea(e.target.value)}>{Object.entries(areas).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
-        <label htmlFor="level">Seu nível de inglês</label>
-        <select id="level" value={level} onChange={e=>setLevel(e.target.value)}>{Object.entries(levels).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
-        <button type="submit">Começar treino gratuito</button>
-      </form> : <div className="training">
-        <p className="progress">Exercício {index+1} de {available.length} • {levels[level]}</p>
+    <header><div className="logo">✦</div><div><strong>BellaTech</strong><small>Desenvolvimento profissional e inglês para oportunidades</small></div></header>
+    <section className="hero"><div className="hero-content"><span>✦ INTERVIEW COACH • DISCIPLINA 01</span><h1>Pratique inglês para entrevistas de emprego.</h1><p>Aprenda a apresentar suas habilidades, praticar respostas e se preparar para oportunidades de carreira.</p><div className="hero-tags"><span>✓ Traduções e exemplos</span><span>✓ No seu ritmo</span><span>✓ Ambiente acolhedor</span></div></div></section>
+    <section className="panel" aria-label="Disciplina de inglês para entrevistas">
+      <p className="eyebrow">MY FIRST JOB INTERVIEW</p><h2>Minha primeira entrevista em inglês</h2>
+      <p>Disciplina demonstrativa: três perguntas de prática e uma avaliação final com dez questões. Você precisa acertar pelo menos sete para avançar. O resultado mede apenas este conteúdo, não sua proficiência geral.</p>
+      {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setShowExample(false);setStage('practice');}}>
+        <label htmlFor="area">Área profissional</label><select id="area" value={area} onChange={e=>setArea(e.target.value)}>{Object.entries(areas).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
+        <label htmlFor="level">Seu nível de inglês</label><select id="level" value={level} onChange={e=>setLevel(e.target.value)}>{Object.entries(levels).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
+        <button type="submit">Começar treino gratuito →</button>
+      </form>}
+      {stage==='practice' && <div className="training">
+        <p className="progress">ETAPA 1 DE 2 • Prática {index+1} de {available.length}</p>
+        <div className="progress-track"><div style={{width:((index+1)/available.length*100)+'%'}}/></div>
         <h3>{current.en}</h3><p><strong>Tradução:</strong> {current.pt}</p>
-        <label htmlFor="answer">Escreva sua resposta em inglês (opcional)</label>
-        <textarea id="answer" rows={4} value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Escreva aqui para praticar. Sua resposta fica somente nesta página."/>
+        <label htmlFor="answer">Sua resposta em inglês <span aria-hidden="true">*</span></label>
+        <textarea id="answer" rows={4} required value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Escreva sua resposta em inglês. Não inclua informações pessoais."/>
         <p className="tip"><strong>Dica:</strong> {current.tip}</p>
         <button type="button" className="secondary" onClick={()=>setShowExample(v=>!v)}>{showExample?'Ocultar exemplo':'Ver resposta de exemplo'}</button>
-        {showExample && <div className="output" role="status"><strong>Exemplo para estudar:</strong><p>{current.sample}</p><small>Adapte ao seu contexto. Não copie experiências que você não viveu.</small></div>}
-        <div className="actions"><button type="button" className="secondary" onClick={restart}>Recomeçar</button><button type="button" onClick={()=>{if(index+1>=available.length){restart();}else{setIndex(i=>i+1);setAnswer('');setShowExample(false);}}}>{index+1>=available.length?'Concluir treino':'Próxima pergunta'}</button></div>
+        {showExample && <div className="output"><strong>Exemplo para estudar:</strong><p>{current.sample}</p><small>Adapte ao seu contexto; não invente experiências.</small></div>}
+        <div className="actions"><button type="button" className="secondary" onClick={restart}>Sair do treino</button><button type="button" disabled={!answer.trim()} onClick={advancePractice}>{index+1>=available.length?'Ir para avaliação':'Próxima pergunta →'}</button></div>
+      </div>}
+      {stage==='quiz' && <div className="training">
+        <p className="progress">ETAPA 2 DE 2 • Avaliação final</p>
+        <h3>Questionário de aprendizagem</h3><p>Responda todas as 10 questões. Cada acerto vale um ponto. Nota mínima: 7/10 (70%).</p>
+        {quiz.map((item,i)=><fieldset className="quiz-question" key={i}><legend>{i+1}. {item.q}</legend>{item.opts.map((option,j)=><label className="quiz-option" key={j}><input type="radio" name={'q'+i} checked={quizAnswers[i]===j} onChange={()=>setQuizAnswers(prev=>({...prev,[i]:j}))}/><span>{option}</span></label>)}</fieldset>)}
+        <p className="progress">{Object.keys(quizAnswers).length} de 10 questões respondidas</p>
+        <button type="button" disabled={Object.keys(quizAnswers).length!==10} onClick={submitQuiz}>Concluir avaliação e ver resultado</button>
+      </div>}
+      {stage==='result' && <div className="training" aria-live="polite">
+        <p className="progress">DISCIPLINA 01 • RESULTADO</p><h3>{passed?'Parabéns! Disciplina concluída.':'Você está progredindo. Vamos revisar?'}</h3>
+        <div className="score"><strong>{score}/10</strong><span>{score*10}% de acertos • {attempts}ª tentativa</span></div>
+        <p>{passed?'Você atingiu a meta de 70%. A próxima disciplina ficará disponível quando for criada.':'Para desbloquear a próxima disciplina, é necessário atingir 70%. Revise as explicações e tente novamente.'}</p>
+        <h3>Revisão das respostas</h3>
+        {quiz.map((item,i)=><div className="review-item" key={i}><strong>{i+1}. {quizAnswers[i]===item.correct?'✓ Correta':'✕ Revisar'}</strong><p>{item.q}</p><p><strong>Resposta esperada:</strong> {item.opts[item.correct]}</p><small>{item.why}</small></div>)}
+        <p className="privacy-note">Nesta versão, suas respostas e notas não são enviadas ao banco de dados. Ao fechar a página, você perde o resultado. O cadastro e o histórico individual ainda não foram implementados.</p>
+        <div className="actions">{!passed && <button type="button" onClick={()=>{setQuizAnswers({});setStage('quiz');}}>Refazer avaliação</button>}<button type="button" className="secondary" onClick={restart}>Voltar ao início</button></div>
       </div>}
     </section>
     <details className="panel private"><summary>Área restrita da equipe de avaliação</summary>
