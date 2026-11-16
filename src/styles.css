@@ -118,3 +118,8 @@ header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
 .audio-controls input{width:18px;height:18px;accent-color:#672f9d}
 .audio-controls small{width:100%;color:#735275}
 @media(max-width:480px){.audio-controls button{flex:1 1 145px}.path-card{padding:15px}}
+
+/* Destaque exclusivo da trilha recomendada */
+.path-card button.recommended-path-button{background:#ED5BA7;color:#fff}
+.path-card button.recommended-path-button:not(:disabled):hover{background:#D93D91}
+.path-card button.recommended-path-button:focus-visible{outline:3px solid #672f9d;outline-offset:3px}
