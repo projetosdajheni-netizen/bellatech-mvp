@@ -184,3 +184,8 @@ button.hero-cta{font:inherit;cursor:pointer;border:0;text-decoration:none;displa
 .module-map .module-photo-cover.cover-locked img{filter:grayscale(.35);opacity:.65}
 .module-map .module-photo-cover.cover-locked .module-photo-tint{background:rgba(80,57,112,.25)}
 @media(prefers-reduced-motion:reduce){.module-map .module-photo-cover img{transition:none}.module-map .module-tile:hover .module-photo-cover img{transform:none}}
+
+/* Capas finais aprovadas pela usuária, sem tonalização extra */
+.module-map .module-photo-cover img{object-position:center center}
+.module-map .module-photo-cover.cover-locked img{filter:none;opacity:1}
+.module-map .module-photo-cover.cover-locked .module-photo-tint{display:none}
