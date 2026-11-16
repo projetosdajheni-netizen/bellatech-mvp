@@ -219,3 +219,14 @@ button.hero-cta{font:inherit;cursor:pointer;border:0;text-decoration:none;displa
 .journey-navigation-actions button{min-height:44px}
 .journey-navigation-actions button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:540px){.journey-navigation-actions{width:100%}.journey-navigation-actions button{flex:1;min-width:135px}}
+
+/* CTA principal BellaTech: botão interativo inspirado na referência aprovada */
+.hero .hero-cta{display:inline-flex;align-items:center;justify-content:space-between;gap:15px;width:min(100%,480px);max-width:480px;min-height:76px;padding:12px 14px 12px 21px;border:2px solid #fa77dc;border-radius:999px;background:linear-gradient(115deg,#f34ab2 0%,#db24a8 48%,#a500ac 100%);color:#fff;font-size:clamp(15px,1.7vw,19px);font-weight:800;line-height:1.2;box-shadow:0 10px 26px rgba(221,43,170,.27),inset 0 2px 0 rgba(255,255,255,.22);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;cursor:pointer}
+.hero .hero-cta:hover{background:linear-gradient(115deg,#fa58bc,#e22cb3 50%,#b108b7);transform:translateY(-2px);box-shadow:0 15px 30px rgba(221,43,170,.36)}
+.hero .hero-cta:active{transform:translateY(0)}
+.hero .hero-cta:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.hero .hero-cta .hero-cta-rocket{font-size:27px;letter-spacing:0;line-height:1;flex:none}
+.hero .hero-cta .hero-cta-label{font-size:inherit;letter-spacing:0;flex:1;text-align:center;white-space:normal}
+.hero .hero-cta .hero-cta-arrow{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#fff0ff;color:#82229a;font-size:29px;font-weight:800;letter-spacing:0;flex:none}
+@media(max-width:480px){.hero .hero-cta{min-height:65px;padding:9px 10px 9px 14px;gap:8px;font-size:14px}.hero .hero-cta .hero-cta-rocket{font-size:23px}.hero .hero-cta .hero-cta-arrow{width:40px;height:40px;font-size:24px}}
+@media(prefers-reduced-motion:reduce){.hero .hero-cta{transition:none}.hero .hero-cta:hover{transform:none}}
