@@ -137,8 +137,7 @@ export default function App() {
     {stage==='home' && <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><button type="button" className="hero-cta" onClick={()=>{setStage("intro");window.scrollTo({top:0,behavior:"smooth"});}}>Começar treino gratuito <span aria-hidden="true">→</span></button></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
     {stage!=='home' && <div className="journey-navigation"><button type="button" className="secondary" onClick={()=>{restart();setStage("home");window.scrollTo({top:0,behavior:"smooth"});}}>← Voltar ao início</button><span>Ambiente de aprendizagem BellaTech</span></div>}
     {stage!=='home' && <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
-      <p className="eyebrow">SUA JORNADA BELLATECH</p><h2>Inglês para oportunidades profissionais</h2>
-      <p>Responda sobre seu objetivo e seu inglês para receber uma sugestão inicial. Você poderá escolher outra trilha. Esta recomendação não é um teste de proficiência.</p>
+      {(stage==='intro'||stage==='paths') && <div className="journey-intro"><p className="eyebrow">INGLÊS PROFISSIONAL</p><h2>Encontre sua trilha</h2><p>Conte seu objetivo e escolha por onde começar. A sugestão é inicial e não representa um teste de proficiência.</p></div>}
       {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setStage('paths')}}>
        <label htmlFor="goal">Objetivo profissional</label><select id="goal" value={goal} onChange={e=>setGoal(e.target.value)}>{Object.entries(goals).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
        <label htmlFor="area">Área de interesse</label><select id="area" value={area} onChange={e=>setArea(e.target.value)}>{Object.entries(areas).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
@@ -150,10 +149,10 @@ export default function App() {
        <p className="tip">Neste MVP, as trilhas compartilham exercícios demonstrativos. Conteúdos específicos ainda serão desenvolvidos.</p><button type="button" className="secondary" onClick={()=>setStage('intro')}>Alterar respostas</button>
       </div>}
       {stage==='module-map' && <div className="training">
-        <p className="progress">TRILHA DE APRENDIZAGEM • {paths.find(p=>p.id===path)?.title}</p>
-        <h3>Minha jornada profissional</h3>
-        <p>Conclua as atividades de cada módulo para desbloquear o próximo. Você pode repetir os módulos já concluídos, sem nota mínima.</p>
-        <div className="module-progress"><strong>Progresso: {unlocked} de 4 módulos</strong><div className="progress-track"><div style={{width:(unlocked/4*100)+'%'}}/></div></div>
+        <div className="journey-intro"><p className="eyebrow">TRILHA DE APRENDIZAGEM · {paths.find(p=>p.id===path)?.title}</p>
+        <h2>Sua jornada começa aqui!</h2>
+        <p>Desenvolva seu inglês para situações reais de trabalho. Conclua cada módulo para avançar e ganhar confiança na comunicação profissional.</p></div>
+        <div className="module-progress"><div className="module-progress-label"><strong>Seu progresso</strong><span>{unlocked} de 4 módulos</span></div><div className="progress-track"><div style={{width:(unlocked/4*100)+'%'}}/></div></div>
         <div className="module-map">{learningModules.map((m,i)=><article className={'module-tile '+(i>unlocked?'module-locked':'')+(i<unlocked?' module-completed':'')} key={i}>
           <ModuleCover variant={i} locked={i>unlocked}/>
           <div className="module-details">
