@@ -164,7 +164,7 @@ export default function App() {
       setResult(json);
     } catch(error){setErr(error.message || 'Falha na solicitação.');} finally{setBusy(false);}
   }
-  return <main className="container">
+  return <main className={stage==='home'?"container home-container":"container"}>
     <header className="brand-header"><a className="brand-home-link" href="/" aria-label="BellaTech — voltar à página inicial"><div className="logo logo-shooting-star" aria-hidden="true"><svg viewBox="0 0 70 65" width="58" height="54" focusable="false"><defs><linearGradient id="bellatech-logo-trail" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stopColor="#EAA5F5" stopOpacity="0"/><stop offset="1" stopColor="#E13DAA"/></linearGradient></defs><g className="logo-star-motion"><path d="M6 54 Q22 35 47 23" stroke="url(#bellatech-logo-trail)" strokeWidth="4" fill="none" strokeLinecap="round"/><path d="M48 10 L52 20 L63 24 L52 28 L48 39 L44 28 L33 24 L44 20Z" fill="#E13DAA"/></g><circle cx="24" cy="19" r="2" fill="#AD7AE8"/></svg></div><div className="brand-copy"><strong className="brand-name">Bella<span className="brand-tech">Tech</span></strong><small className="brand-subtitle">Desenvolvimento profissional e empregabilidade</small><span className="brand-audience">Para mulheres LGBTQIAPN+</span></div></a></header>
     {stage==='home' && <section className="hero" onPointerMove={createShootingStar}><div className="shooting-stars" aria-hidden="true">{shootingStars.map(star=><span key={star.id} className="shooting-star" style={{left:star.x,top:star.y}} onAnimationEnd={()=>setShootingStars(current=>current.filter(item=>item.id!==star.id))}/>)}</div><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><button type="button" className="hero-cta" onClick={()=>{setStage("intro");window.scrollTo({top:0,behavior:"smooth"});}}><span className="hero-cta-rocket" aria-hidden="true">🚀</span><span className="hero-cta-label">Começar treino gratuito</span><span className="hero-cta-arrow" aria-hidden="true">→</span></button></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
     {stage!=='home' && <div className="journey-navigation"><div className="journey-navigation-actions"><button type="button" className="secondary" onClick={goToPreviousPage} disabled={previousStages.current.length===0}>← Página anterior</button><button type="button" className="secondary" onClick={()=>{restart();setStage("home");window.scrollTo({top:0,behavior:"smooth"});}}>⌂ Voltar ao início</button></div><span>Ambiente de aprendizagem BellaTech</span></div>}
@@ -278,6 +278,27 @@ export default function App() {
         <div className="actions">{!passed && <button type="button" onClick={()=>{setQuizAnswers({});setStage('quiz');}}>Refazer avaliação</button>}<button type="button" className="secondary" onClick={restart}>Voltar ao início</button></div>
       </div>}
     </section>}
+    {stage==='home' && <div className="home-sections">
+      <section className="home-value-section" aria-labelledby="home-value-title">
+        <div className="home-section-heading"><span className="home-kicker">POR QUE BELLATECH?</span><h2 id="home-value-title">Inglês que faz sentido para sua carreira</h2><p>Uma experiência prática para desenvolver comunicação profissional, no seu ritmo e com situações do mundo do trabalho.</p></div>
+        <div className="home-value-grid">
+          <article className="home-value-card"><span className="home-value-icon" aria-hidden="true">💬</span><h3>Inglês profissional</h3><p>Aprenda expressões e respostas para situações reais de trabalho.</p></article>
+          <article className="home-value-card"><span className="home-value-icon" aria-hidden="true">✨</span><h3>Aprendizagem prática</h3><p>Estude com exemplos, traduções, atividades e orientações para evoluir.</p></article>
+          <article className="home-value-card"><span className="home-value-icon" aria-hidden="true">💼</span><h3>Desenvolvimento de carreira</h3><p>Pratique a comunicação e fortaleça sua confiança para novas oportunidades.</p></article>
+        </div>
+      </section>
+      <section className="home-path-section" aria-labelledby="home-path-title">
+        <div className="home-section-heading"><span className="home-kicker">CONHEÇA A EXPERIÊNCIA</span><h2 id="home-path-title">Sua jornada em quatro módulos</h2><p>Comece pelos fundamentos e avance passo a passo até o desafio final.</p></div>
+        <div className="home-path-grid">
+          {learningModules.map((module,i)=><article className="home-path-card" key={i}><div className="home-path-image"><img src={'https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/bellatech_capa_modulo_'+(i+1)+'.jpg'} alt="" loading="lazy"/></div><div className="home-path-info"><span>0{i+1} · MÓDULO</span><h3>{module.title}</h3></div></article>)}
+        </div>
+        <button type="button" className="home-path-button" onClick={()=>{setStage('intro');window.scrollTo({top:0,behavior:'smooth'});}}>Explorar minha jornada <span aria-hidden="true">→</span></button>
+      </section>
+      <section className="home-community-section" aria-labelledby="home-community-title">
+        <img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/comunidade.png" alt="Participantes compartilhando experiências em grupo" loading="lazy"/>
+        <div><span className="home-kicker">CONEXÕES QUE IMPORTAM</span><h2 id="home-community-title">Comunidade BellaTech</h2><p>Estamos planejando um espaço de troca de experiências, apoio e conexões profissionais entre participantes.</p><span className="home-future-label">Em planejamento · ainda não disponível no protótipo</span></div>
+      </section>
+    </div>}
     {stage==='home' && <details className="panel private"><summary>Área restrita da equipe de avaliação</summary>
       <p>Esta seção é exclusiva de avaliadoras autorizadas. Não compartilhe códigos nem insira dados pessoais.</p>
       <form onSubmit={generate}><label htmlFor="access">Código privado de teste</label><input id="access" type="password" autoComplete="off" value={access} onChange={e=>setAccess(e.target.value)} required/><button disabled={busy||!access}>{busy?'Registrando...':'Solicitar atividade privada'}</button></form>
