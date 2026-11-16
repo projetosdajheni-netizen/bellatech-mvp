@@ -122,6 +122,13 @@ export default function App() {
   const progressReady=useRef(false);
   const sessionRef=useRef(null);
   const progressRef=useRef(null);
+  const [progressLoaded,setProgressLoaded]=useState(false);
+  const [hasSavedJourney,setHasSavedJourney]=useState(false);
+  const [savedScore,setSavedScore]=useState(null);
+  const [savedAttempts,setSavedAttempts]=useState(0);
+  const saveQueue=useRef(Promise.resolve());
+  const latestProgress=useRef(null);
+  const savingUser=useRef(null);
   useEffect(()=>{sessionRef.current=session;},[session]);
   useEffect(()=>{
     const saved=sessionStorage.getItem('bellatech_auth');
@@ -155,9 +162,17 @@ export default function App() {
   }
   async function logout(){
     const token=sessionRef.current?.access_token;
+    if(token&&progressReady.current&&latestProgress.current){
+      try{
+        await queueProgressSave(token,latestProgress.current);
+        await saveQueue.current;
+      }catch(error){setSyncStatus('Não foi possível salvar seu progresso: '+error.message);return;}
+    }
     if(token)await authRequest('logout',{},token).catch(()=>{});
-    sessionStorage.removeItem('bellatech_auth');progressReady.current=false;setSession(null);setSyncStatus('');
+    sessionStorage.removeItem('bellatech_auth');progressReady.current=false;setProgressLoaded(false);
+    setSession(null);setSyncStatus('');setHasSavedJourney(false);
     setUnlocked(0);setModuleIndex(0);setQuizAnswers({});setAttempts(0);setPath('fundamentos');
+    setStage('home');
   }
   const [area,setArea] = useState('geral');
   const [goal,setGoal]=useState('entrevista');
@@ -219,36 +234,65 @@ export default function App() {
   const guided = available[guidedIndex] || available[0];
   const score = quiz.reduce((sum,q,i)=>sum+(quizAnswers[i]===q.correct?1:0),0);
   const passed = score >= 7;
+  function queueProgressSave(token,payload){
+    saveQueue.current=saveQueue.current.catch(()=>{}).then(()=>progressRequest(token,'POST',payload));
+    return saveQueue.current;
+  }
   useEffect(()=>{
     if(!session?.access_token||!authLoaded)return;
-    progressReady.current=false;
+    progressReady.current=false;setProgressLoaded(false);
     let active=true;
     progressRequest(session.access_token,'GET').then(rows=>{
       if(!active)return;
-      if(rows?.[0]){
-        setPath(rows[0].selected_path||'fundamentos');
-        setUnlocked(rows[0].unlocked_modules||0);
-        setModuleIndex(rows[0].last_module||0);
-        setAttempts(rows[0].quiz_attempts||0);
+      const row=rows?.[0];
+      if(row){
+        setPath(row.selected_path||'fundamentos');
+        setUnlocked(row.unlocked_modules||0);
+        setModuleIndex(row.last_module||0);
+        setAttempts(row.quiz_attempts||0);
+        setSavedScore(row.quiz_score);
+        setSavedAttempts(row.quiz_attempts||0);
+        setHasSavedJourney(true);
         setSyncStatus('Progresso recuperado da nuvem.');
-      }else setSyncStatus('Sua jornada está pronta para ser salva na nuvem.');
+      }else{
+        setHasSavedJourney(false);
+        setSavedScore(null);
+        setSavedAttempts(0);
+        setSyncStatus('Sua jornada está pronta para ser salva na nuvem.');
+      }
+      // Allow the save effect only after the remote snapshot has been applied.
       progressReady.current=true;
-    }).catch(error=>{if(active){setSyncStatus('Não foi possível carregar seu progresso: '+error.message);}});
+      setProgressLoaded(true);
+    }).catch(error=>{if(active)setSyncStatus('Não foi possível carregar seu progresso: '+error.message);});
     return ()=>{active=false;};
   },[session?.access_token,authLoaded]);
   useEffect(()=>{
-    if(!session?.access_token||!progressReady.current)return;
+    if(!session?.access_token||!progressLoaded||!progressReady.current)return;
+    const payload={
+      user_id:session.user.id,selected_path:path,unlocked_modules:unlocked,
+      last_module:Math.min(moduleIndex,3),
+      quiz_score:stage==='result'?score:savedScore,
+      quiz_attempts:attempts,updated_at:new Date().toISOString()
+    };
+    latestProgress.current=payload;
     const timer=setTimeout(()=>{
-      progressRequest(session.access_token,'POST',{
-        user_id:session.user.id,selected_path:path,unlocked_modules:unlocked,
-        last_module:Math.min(moduleIndex,3),quiz_score:stage==='result'?score:null,
-        quiz_attempts:attempts,updated_at:new Date().toISOString()
-      }).then(()=>setSyncStatus('Progresso salvo na nuvem.')).catch(error=>setSyncStatus('Erro ao salvar progresso: '+error.message));
-    },650);
+      queueProgressSave(session.access_token,payload)
+        .then(()=>{setHasSavedJourney(true);setSyncStatus('Progresso salvo na nuvem.');})
+        .catch(error=>setSyncStatus('Erro ao salvar progresso: '+error.message));
+    },450);
     return ()=>clearTimeout(timer);
-  },[session?.access_token,path,unlocked,moduleIndex,attempts,stage]);
-  function choosePath(id){setUnlocked(0);setModuleIndex(0);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setPath(id);setGuidedIndex(0);setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setStage('module-map');}
-  function restart(){setUnlocked(0);setModuleIndex(0);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setGuidedIndex(0);setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);setAttempts(0);}
+  },[session?.access_token,progressLoaded,path,unlocked,moduleIndex,attempts,stage,savedScore]);
+  function continueJourney(){
+    if(!session||!progressLoaded)return;
+    setStage('module-map');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function goHome(){
+    setStage('home');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function choosePath(id){setSavedScore(null);setUnlocked(0);setModuleIndex(0);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setPath(id);setGuidedIndex(0);setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setStage('module-map');}
+  function restart(){setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setGuidedIndex(0);setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);}
   function openModule(i){if(i>unlocked)return;setModuleIndex(i);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setStage('module-activity');}
   function advanceModule(){const total=learningModules[moduleIndex].items.length;if(activityIndex+1<total){setActivityIndex(i=>i+1);setModuleChoice(null);setModuleChecked(false);}else{setUnlocked(n=>Math.max(n,moduleIndex+1));setStage('module-map');}}
   function advancePractice(){if(!answer.trim())return;setPracticeAnswers(prev=>[...prev,answer.trim()]);setAnswer('');setShowExample(false);if(index+1>=available.length){setStage('evaluation-intro');}else{setIndex(i=>i+1);}}
@@ -266,8 +310,9 @@ export default function App() {
     <header className="brand-header"><a className="brand-home-link" href="/" aria-label="BellaTech — voltar à página inicial"><div className="logo logo-shooting-star" aria-hidden="true"><svg viewBox="0 0 70 65" width="58" height="54" focusable="false"><defs><linearGradient id="bellatech-logo-trail" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stopColor="#EAA5F5" stopOpacity="0"/><stop offset="1" stopColor="#E13DAA"/></linearGradient></defs><g className="logo-star-motion"><path d="M6 54 Q22 35 47 23" stroke="url(#bellatech-logo-trail)" strokeWidth="4" fill="none" strokeLinecap="round"/><path d="M48 10 L52 20 L63 24 L52 28 L48 39 L44 28 L33 24 L44 20Z" fill="#E13DAA"/></g><circle cx="24" cy="19" r="2" fill="#AD7AE8"/></svg></div><div className="brand-copy"><strong className="brand-name">Bella<span className="brand-tech">Tech</span></strong><small className="brand-subtitle">Desenvolvimento profissional e empregabilidade</small><span className="brand-audience">Para mulheres LGBTQIAPN+</span></div></a><div className="auth-header-actions">{session?<><span className="auth-user-label">{session.user?.email}</span><button type="button" className="secondary" onClick={logout}>Sair</button></>:<button type="button" className="secondary" onClick={()=>{setAuthMode('login');setAuthOpen(true);setAuthError('');setAuthMessage('');}}>Entrar / Criar conta</button>}</div></header>
     {authOpen&&<div className="auth-overlay" role="presentation"><section className="auth-dialog" role="dialog" aria-modal="true" aria-label="Acesso à conta BellaTech"><button type="button" className="auth-close secondary" onClick={()=>setAuthOpen(false)} aria-label="Fechar">✕</button><h2>{authMode==='signup'?'Criar conta':authMode==='reset'?'Recuperar senha':'Entrar na BellaTech'}</h2><p>Entre para salvar sua jornada na nuvem e continuar em outro dispositivo.</p><form onSubmit={handleAuth}><label htmlFor="auth-email">E-mail</label><input id="auth-email" type="email" required autoComplete="email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)}/>{authMode!=='reset'&&<><label htmlFor="auth-password">Senha</label><input id="auth-password" type="password" required minLength={authMode==='signup'?8:undefined} autoComplete={authMode==='signup'?'new-password':'current-password'} value={authPassword} onChange={e=>setAuthPassword(e.target.value)}/>{authMode==='signup'&&<small>Obrigatório: 8 caracteres ou mais, uma letra maiúscula, uma minúscula e um símbolo.</small>}</>}{authError&&<p className="auth-error" role="alert">{authError}</p>}{authMessage&&<p role="status">{authMessage}</p>}<button type="submit" disabled={authBusy}>{authBusy?'Aguarde...':authMode==='signup'?'Criar conta':authMode==='reset'?'Enviar instruções':'Entrar'}</button></form><div className="auth-links">{authMode!=='login'&&<button type="button" className="secondary" onClick={()=>{setAuthMode('login');setAuthError('');setAuthMessage('');}}>Já tenho conta</button>}{authMode!=='signup'&&<button type="button" className="secondary" onClick={()=>{setAuthMode('signup');setAuthError('');setAuthMessage('');}}>Criar conta</button>}{authMode!=='reset'&&<button type="button" className="secondary" onClick={()=>{setAuthMode('reset');setAuthError('');setAuthMessage('');}}>Esqueci minha senha</button>}</div></section></div>}
     {session&&<p className="sync-notice" role="status">{syncStatus||'Conectando ao seu progresso...'}</p>}
+    {stage==='home'&&session&&hasSavedJourney&&progressLoaded&&<section className="resume-journey" aria-label="Retomar sua aprendizagem"><div><strong>💜 Sua jornada está esperando!</strong><p>Trilha: {paths.find(p=>p.id===path)?.title} · {unlocked} de 4 módulos concluídos{savedScore!==null?' · Última avaliação: '+savedScore+'/10':''}</p></div><button type="button" onClick={continueJourney}>Continuar minha jornada →</button></section>}
     {stage==='home' && <section className="hero" onPointerMove={createShootingStar} onPointerDown={event=>{if(event.pointerType!=='mouse')createShootingStar(event);}}><div className="shooting-stars" aria-hidden="true">{shootingStars.map(star=><span key={star.id} className="shooting-star" style={{left:star.x,top:star.y}} onAnimationEnd={()=>setShootingStars(current=>current.filter(item=>item.id!==star.id))}/>)}</div><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva sua comunicação em inglês, ganhe confiança e prepare-se para novas oportunidades profissionais.</p><button type="button" className="hero-cta" onClick={()=>{setStage("intro");window.scrollTo({top:0,behavior:"smooth"});}}><span className="hero-cta-rocket" aria-hidden="true">🚀</span><span className="hero-cta-label">Começar treino gratuito</span><span className="hero-cta-arrow" aria-hidden="true">→</span></button></div><div className="hero-mobile-photo" role="img" aria-label="Quatro mulheres sorrindo diante de uma bandeira arco-íris"/><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>}
-    {stage!=='home' && <div className="journey-navigation"><div className="journey-navigation-actions"><button type="button" className="secondary" onClick={goToPreviousPage} disabled={previousStages.current.length===0}>← Página anterior</button><button type="button" className="secondary" onClick={()=>{restart();setStage("home");window.scrollTo({top:0,behavior:"smooth"});}}>⌂ Voltar ao início</button></div><span>Ambiente de aprendizagem BellaTech</span></div>}
+    {stage!=='home' && <div className="journey-navigation"><div className="journey-navigation-actions"><button type="button" className="secondary" onClick={goToPreviousPage} disabled={previousStages.current.length===0}>← Página anterior</button><button type="button" className="secondary" onClick={goHome}>⌂ Voltar ao início</button></div><span>Ambiente de aprendizagem BellaTech</span></div>}
     {stage!=='home' && <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
       {(stage==='intro'||stage==='paths') && <div className="journey-intro"><p className="eyebrow">INGLÊS PROFISSIONAL</p><h2>Encontre sua trilha</h2><p>Conte seu objetivo e escolha por onde começar. A sugestão é inicial e não representa um teste de proficiência.</p></div>}
       {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setStage('paths')}}>
