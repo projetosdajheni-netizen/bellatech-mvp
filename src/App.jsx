@@ -299,13 +299,6 @@ export default function App() {
         <div><span className="home-kicker">CONEXÕES QUE IMPORTAM</span><h2 id="home-community-title">Comunidade BellaTech</h2><p>Estamos planejando um espaço de troca de experiências, apoio e conexões profissionais entre participantes.</p><span className="home-future-label">Em planejamento · ainda não disponível no protótipo</span></div>
       </section>
     </div>}
-    {stage==='home' && <details className="panel private"><summary>Área restrita da equipe de avaliação</summary>
-      <p>Esta seção é exclusiva de avaliadoras autorizadas. Não compartilhe códigos nem insira dados pessoais.</p>
-      <form onSubmit={generate}><label htmlFor="access">Código privado de teste</label><input id="access" type="password" autoComplete="off" value={access} onChange={e=>setAccess(e.target.value)} required/><button disabled={busy||!access}>{busy?'Registrando...':'Solicitar atividade privada'}</button></form>
-      {err && <p className="error" role="alert">{err}</p>}
-      {result && <p role="status">Solicitação registrada: {result.activityId}. Aguardando revisão humana.</p>}
-      <ReviewPanel access={access}/>
-    </details>}
     <footer>Projeto acadêmico em desenvolvimento • Não compartilhe dados pessoais • Nenhuma promessa de contratação ou fluência</footer>
   </main>;
 }
