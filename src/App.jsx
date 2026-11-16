@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import ReviewPanel from './ReviewPanel.jsx';
 
 // Conteúdo demonstrativo criado para o piloto; não representa atividades aprovadas no banco.
