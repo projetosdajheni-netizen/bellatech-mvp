@@ -43,20 +43,20 @@ export function makeCertificatePdf(name,score,date){
   center(`Data de emissão: ${date}   |   BellaTech - Projeto acadêmico`,172-offset,13);
   center('Documento demonstrativo de conclusão. Não constitui certificação oficial',103,11,'F1','0.48 0.42 0.54');
   center('de proficiência em inglês.',86,11,'F1','0.48 0.42 0.54');
-  const content=stream.join('\\n')+'\\n';
+  const content=stream.join('\n')+'\n';
   const objects=[
     '<< /Type /Catalog /Pages 2 0 R >>',
     '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
     `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>`,
-    `<< /Length ${content.length} >>\\nstream\\n${content}endstream`,
+    `<< /Length ${content.length} >>\nstream\n${content}endstream`,
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'
   ];
-  let pdf='%PDF-1.4\\n',offsets=[0];
-  for(let i=0;i<objects.length;i++){offsets.push(pdf.length);pdf+=`${i+1} 0 obj\\n${objects[i]}\\nendobj\\n`;}
+  let pdf='%PDF-1.4\n',offsets=[0];
+  for(let i=0;i<objects.length;i++){offsets.push(pdf.length);pdf+=`${i+1} 0 obj\n${objects[i]}\nendobj\n`;}
   const xref=pdf.length;
-  pdf+=`xref\\n0 ${objects.length+1}\\n0000000000 65535 f \\n`;
-  offsets.slice(1).forEach(n=>{pdf+=String(n).padStart(10,'0')+' 00000 n \\n';});
-  pdf+=`trailer\\n<< /Size ${objects.length+1} /Root 1 0 R >>\\nstartxref\\n${xref}\\n%%EOF`;
+  pdf+=`xref\n0 ${objects.length+1}\n0000000000 65535 f \n`;
+  offsets.slice(1).forEach(n=>{pdf+=String(n).padStart(10,'0')+' 00000 n \n';});
+  pdf+=`trailer\n<< /Size ${objects.length+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
   return new Blob([new Uint8Array(Array.from(pdf,c=>c.charCodeAt(0)))],{type:'application/pdf'});
 }
