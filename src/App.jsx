@@ -130,6 +130,8 @@ export default function App() {
   const [certificateName,setCertificateName]=useState('');
   const [certificateBusy,setCertificateBusy]=useState(false);
   const [certificateError,setCertificateError]=useState('');
+  const [resultSaveError,setResultSaveError]=useState('');
+  const [resultSaving,setResultSaving]=useState(false);
   const [savedAttempts,setSavedAttempts]=useState(0);
   const saveQueue=useRef(Promise.resolve());
   const latestProgress=useRef(null);
@@ -279,7 +281,7 @@ export default function App() {
     const payload={
       user_id:session.user.id,selected_path:path,unlocked_modules:unlocked,
       last_module:Math.min(moduleIndex,3),
-      quiz_score:stage==='result'?Math.max(savedScore??0,score):savedScore,
+      quiz_score:savedScore,
       quiz_attempts:attempts,certificate_name:certificateName.trim()||null,updated_at:new Date().toISOString()
     };
     latestProgress.current=payload;
@@ -294,7 +296,7 @@ export default function App() {
     setCertificateError('');
     if(!session?.access_token){setCertificateError('Entre na sua conta para emitir o certificado.');return;}
     if(!progressLoaded){setCertificateError('Aguarde a sincronização da sua conta.');return;}
-    if(unlocked<4||Math.max(savedScore??0,stage==='result'?score:0)<7){setCertificateError('O certificado exige os quatro módulos concluídos e nota mínima 7/10 no Desafio Final.');return;}
+    if(Math.max(savedScore??0,stage==='result'?score:0)<7){setCertificateError('O certificado exige os quatro módulos concluídos e nota mínima 7/10 no Desafio Final.');return;}
     const name=certificateName.trim().replace(/\\s+/g,' ');
     if(name.length<2||name.length>120){setCertificateError('Informe seu nome para o certificado (2 a 120 caracteres).');return;}
     const popup=window.open('','_blank');
@@ -336,12 +338,34 @@ export default function App() {
     setStage('home');
     window.scrollTo({top:0,behavior:'smooth'});
   }
-  function choosePath(id){setSavedScore(null);setUnlocked(0);setModuleIndex(0);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setPath(id);setGuidedIndex(0);setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setStage('module-map');}
+  function choosePath(id){
+    setPath(id);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);
+    setGuidedIndex(0);setIndex(0);setAnswer('');setPracticeAnswers([]);
+    setStage('module-map');
+  }
   function restart(){setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setGuidedIndex(0);setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);}
   function openModule(i){if(i>unlocked)return;setModuleIndex(i);setActivityIndex(0);setModuleChoice(null);setModuleChecked(false);setStage('module-activity');}
   function advanceModule(){const total=learningModules[moduleIndex].items.length;if(activityIndex+1<total){setActivityIndex(i=>i+1);setModuleChoice(null);setModuleChecked(false);}else{setUnlocked(n=>Math.max(n,moduleIndex+1));setStage('module-map');}}
   function advancePractice(){if(!answer.trim())return;setPracticeAnswers(prev=>[...prev,answer.trim()]);setAnswer('');setShowExample(false);if(index+1>=available.length){setStage('evaluation-intro');}else{setIndex(i=>i+1);}}
-  function submitQuiz(){if(Object.keys(quizAnswers).length!==quiz.length)return;setAttempts(n=>n+1);setStage('result');}
+  async function submitQuiz(){
+    if(Object.keys(quizAnswers).length!==quiz.length)return;
+    const best=Math.max(savedScore??0,score);
+    const nextAttempts=attempts+1;
+    setSavedScore(best);setAttempts(nextAttempts);setResultSaveError('');setStage('result');
+    if(!session?.access_token)return;
+    if(!progressLoaded){setResultSaveError('Aguarde o carregamento da conta para salvar o resultado.');return;}
+    setResultSaving(true);
+    try{
+      await queueProgressSave(session.access_token,{
+        user_id:session.user.id,selected_path:path,unlocked_modules:unlocked,
+        last_module:Math.min(moduleIndex,3),quiz_score:best,
+        quiz_attempts:nextAttempts,certificate_name:certificateName.trim()||null,
+        updated_at:new Date().toISOString()
+      });
+      setHasSavedJourney(true);
+    }catch(error){setResultSaveError('Falha ao salvar a nota: '+error.message);}
+    finally{setResultSaving(false);}
+  }
   async function generate(e) {
     e.preventDefault();setResult(null);setErr('');setBusy(true);
     try {
@@ -386,6 +410,7 @@ export default function App() {
           </div>
           <div className="module-card-action">{i<=unlocked?<button type="button" onClick={()=>openModule(i)}>{i<unlocked?'Revisar módulo':'Começar módulo →'}</button>:<button type="button" disabled aria-label={'Módulo '+(i+1)+' bloqueado'}>🔒 Bloqueado</button>}</div>
         </article>)}</div>
+        {session&&(savedScore??0)>=7&&<section className="certificate-access"><h3>🎓 Seu certificado está disponível</h3><p>Você já alcançou pelo menos 7/10 no Desafio Final. Não precisa refazer a jornada.</p><label htmlFor="certificate-map-name">Nome no certificado</label><input id="certificate-map-name" type="text" maxLength={120} value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando...':'Emitir certificado em PDF'}</button>{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
         <div className="module-extras">
          <article className="module-extra-card">
           <div className="module-extra-cover final-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/certificado%20final.png" alt="Participante comemorando a conclusão de sua jornada profissional" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
@@ -463,13 +488,15 @@ export default function App() {
         <div className="score"><strong>{score}/10</strong><span>{score*10}% de acertos • {attempts}ª tentativa</span></div>
         <p>{passed?'Você atingiu a meta de 70%. A próxima disciplina ficará disponível quando for criada.':'Para desbloquear a próxima disciplina, é necessário atingir 70%. Revise as explicações e tente novamente.'}</p>
         {passed&&<section className="certificate-access"><h3>🎓 Certificado de conclusão</h3>{session?<><p>Você alcançou a nota mínima! Informe o nome que deverá aparecer no certificado.</p><label htmlFor="certificate-name">Nome no certificado</label><input id="certificate-name" type="text" minLength={2} maxLength={120} autoComplete="name" value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando certificado...':'Emitir certificado em PDF'}</button></>:<><p>Entre na sua conta para salvar o resultado e emitir o certificado.</p><button type="button" onClick={()=>{setAuthMode('login');setAuthOpen(true);}}>Entrar ou criar conta</button></>}{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
+        {resultSaving&&<p role="status">Salvando sua nota na nuvem...</p>}
+        {resultSaveError&&<p role="alert" className="auth-error">{resultSaveError}</p>}
         <h3>Revisão das respostas</h3>
         {quiz.map((item,i)=><div className="review-item" key={i}><strong>{i+1}. {quizAnswers[i]===item.correct?'✓ Correta':'✕ Revisar'}</strong><p>{item.q}</p><p><strong>Resposta esperada:</strong> {item.opts[item.correct]}</p><small>{item.why}</small></div>)}
         <p className="privacy-note">Com uma conta, a pontuação e os módulos concluídos são sincronizados na nuvem. As respostas escritas não são armazenadas.</p>
         <div className="actions">{!passed && <button type="button" onClick={()=>{setQuizAnswers({});setStage('quiz');}}>Refazer avaliação</button>}<button type="button" className="secondary" onClick={restart}>Voltar ao início</button></div>
       </div>}
     </section>}
-    {stage==='home'&&session&&hasSavedJourney&&unlocked>=4&&(savedScore??0)>=7&&<section className="certificate-access certificate-home"><h3>🎓 Seu certificado BellaTech</h3><p>Você concluiu o Desafio Final com nota suficiente para emitir seu certificado.</p><label htmlFor="certificate-home-name">Nome no certificado</label><input id="certificate-home-name" type="text" maxLength={120} value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando...':'Emitir certificado em PDF'}</button>{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
+    {stage==='home'&&session&&hasSavedJourney&&(savedScore??0)>=7&&<section className="certificate-access certificate-home"><h3>🎓 Seu certificado BellaTech</h3><p>Você concluiu o Desafio Final com nota suficiente para emitir seu certificado.</p><label htmlFor="certificate-home-name">Nome no certificado</label><input id="certificate-home-name" type="text" maxLength={120} value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando...':'Emitir certificado em PDF'}</button>{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
     {stage==='home' && <div className="home-sections">
       <section className="home-value-section" aria-labelledby="home-value-title">
         <div className="home-section-heading"><span className="home-kicker">POR QUE BELLATECH?</span><h2 id="home-value-title">Inglês que faz sentido para sua carreira</h2><p>Uma experiência prática para desenvolver comunicação profissional, no seu ritmo e com situações do mundo do trabalho.</p></div>
