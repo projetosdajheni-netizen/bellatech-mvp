@@ -361,7 +361,6 @@ export default function App() {
          </article>
         </div>
         <button type="button" className="secondary" onClick={()=>setStage('paths')}>Voltar às trilhas</button>
-        <p className="privacy-note">Com conta, seu progresso é salvo na nuvem. No modo visitante, o progresso dura apenas até a página ser atualizada. Os conteúdos são demonstrativos e ainda não são personalizados por trilha.</p>
       </div>}
       {stage==='module-activity' && <div className="training">
         <p className="progress">MÓDULO {moduleIndex+1} DE 4 • ATIVIDADE {activityIndex+1} DE {learningModules[moduleIndex].items.length}</p>
