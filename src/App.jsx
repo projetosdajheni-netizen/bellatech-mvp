@@ -279,7 +279,7 @@ export default function App() {
     const payload={
       user_id:session.user.id,selected_path:path,unlocked_modules:unlocked,
       last_module:Math.min(moduleIndex,3),
-      quiz_score:stage==='result'?score:savedScore,
+      quiz_score:stage==='result'?Math.max(savedScore??0,score):savedScore,
       quiz_attempts:attempts,certificate_name:certificateName.trim()||null,updated_at:new Date().toISOString()
     };
     latestProgress.current=payload;
@@ -297,6 +297,8 @@ export default function App() {
     if(unlocked<4||Math.max(savedScore??0,stage==='result'?score:0)<7){setCertificateError('O certificado exige os quatro módulos concluídos e nota mínima 7/10 no Desafio Final.');return;}
     const name=certificateName.trim().replace(/\\s+/g,' ');
     if(name.length<2||name.length>120){setCertificateError('Informe seu nome para o certificado (2 a 120 caracteres).');return;}
+    const popup=window.open('','_blank');
+    if(!popup){setCertificateError('Permita pop-ups para abrir o certificado e salvá-lo como PDF.');return;}
     setCertificateBusy(true);
     try{
       const grade=Math.max(savedScore??0,stage==='result'?score:0);
@@ -307,11 +309,9 @@ export default function App() {
       setSavedScore(grade);setHasSavedJourney(true);
       const safe=value=>value.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
       const issued=new Date().toLocaleDateString('pt-BR');
-      const popup=window.open('','_blank');
-      if(!popup){setCertificateError('Permita pop-ups para abrir o certificado e salvá-lo como PDF.');return;}
       popup.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Certificado BellaTech</title><style>@page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f9f2fc;color:#48235f}.certificate{height:185mm;border:4px solid #b67acb;padding:20mm 17mm;text-align:center;position:relative;background:#fffafd}.brand{font-size:38px;font-weight:800}.brand span{color:#c34aa8}.rainbow{display:flex;height:7px;margin:12px auto 18px;width:75%;opacity:.7}.rainbow i{flex:1}.seal{font-size:42px}h1{font-size:27px;margin:10px 0 18px;letter-spacing:2px}.name{font-size:31px;font-weight:700;border-bottom:1px solid #d8b5e3;display:inline-block;padding:4px 30px;margin:12px 0}.description{max-width:700px;margin:12px auto;line-height:1.7;font-size:17px}.details{margin:23px 0 14px;font-size:14px}.fine{font-size:11px;color:#796987;margin-top:15px}.print{position:fixed;right:12px;top:12px;padding:12px;border:0;border-radius:9px;background:#82449f;color:white;cursor:pointer}@media print{.print{display:none}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><button class="print" onclick="window.print()">Salvar como PDF / Imprimir</button><main class="certificate"><div class="brand">Bella<span>Tech</span> ✦</div><div class="rainbow"><i style="background:#e76b79"></i><i style="background:#eea05e"></i><i style="background:#e8c968"></i><i style="background:#7eae85"></i><i style="background:#779ed1"></i><i style="background:#ae83cb"></i></div><div class="seal">✦</div><h1>CERTIFICADO DE CONCLUSÃO</h1><div>Certificamos que</div><div class="name">${safe(name)}</div><p class="description">concluiu a jornada demonstrativa de Inglês Profissional da BellaTech, composta por quatro módulos de aprendizagem e pelo Desafio Final, com aproveitamento de <strong>${grade}/10</strong>.</p><div class="details">Data de emissão: ${issued} &nbsp; • &nbsp; BellaTech — Projeto acadêmico</div><p class="fine">Documento demonstrativo de conclusão. Não constitui certificação oficial de proficiência em inglês.</p></main></body></html>`);
       popup.document.close();
-    }catch(error){setCertificateError('Não foi possível salvar os dados do certificado: '+error.message);}
+    }catch(error){popup.close();setCertificateError('Não foi possível salvar os dados do certificado: '+error.message);}
     finally{setCertificateBusy(false);}
   }
   function requestJourneyStart(){
