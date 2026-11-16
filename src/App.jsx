@@ -28,8 +28,17 @@ const quiz = [
 ];
 const levels = {zero:'Começando do zero',iniciante:'Iniciante',basico:'Básico'};
 const areas = {geral:'Qualquer área',tecnologia:'Tecnologia',atendimento:'Atendimento',administracao:'Administração'};
+const goals={entrevista:'Preparar-me para entrevistas',trabalho:'Comunicar-me no trabalho',carreira:'Desenvolver minha carreira'};
+const paths=[{id:'fundamentos',title:'Fundamentos do inglês profissional'},{id:'entrevista',title:'Inglês para entrevistas'},{id:'trabalho',title:'Comunicação no trabalho'}];
+function AudioControls({en,pt}) {
+ const [slow,setSlow]=useState(false);const [notice,setNotice]=useState('');
+ function speak(t,lang){if(typeof window==='undefined'||!('speechSynthesis' in window)){setNotice('Áudio indisponível neste navegador.');return;}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=slow?.75:1;u.onerror=()=>setNotice('Não foi possível reproduzir o áudio.');window.speechSynthesis.speak(u);}
+ return <div className="audio-controls"><button type="button" className="secondary" onClick={()=>speak(en,'en-US')}>🔊 Ouvir em inglês</button>{pt&&<button type="button" className="secondary" onClick={()=>speak(pt,'pt-BR')}>🔊 Ouvir em português</button>}<label><input type="checkbox" checked={slow} onChange={e=>setSlow(e.target.checked)}/> Áudio mais lento</label>{notice&&<small role="status">{notice}</small>}</div>;
+}
 export default function App() {
   const [area,setArea] = useState('geral');
+  const [goal,setGoal]=useState('entrevista');
+  const [path,setPath]=useState('fundamentos');
   const [level,setLevel] = useState('zero');
   const [stage,setStage] = useState('intro');
   const [guidedIndex,setGuidedIndex] = useState(0);
@@ -43,11 +52,13 @@ export default function App() {
   const [result,setResult] = useState(null);
   const [err,setErr] = useState('');
   const [busy,setBusy] = useState(false);
+  const recommended=level==='zero'?'fundamentos':goal==='trabalho'?'trabalho':'entrevista';
   const available = exercises.filter(q => (q.area === area || q.area === 'geral') && (q.level === level || q.level === 'zero')).slice(0,3);
   const current = available[index] || available[0];
   const guided = available[guidedIndex] || available[0];
   const score = quiz.reduce((sum,q,i)=>sum+(quizAnswers[i]===q.correct?1:0),0);
   const passed = score >= 7;
+  function choosePath(id){setPath(id);setGuidedIndex(0);setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setStage('preparation');}
   function restart(){setGuidedIndex(0);setStage('intro');setIndex(0);setAnswer('');setShowExample(false);setQuizAnswers({});setPracticeAnswers([]);setAttempts(0);}
   function advancePractice(){if(!answer.trim())return;setPracticeAnswers(prev=>[...prev,answer.trim()]);setAnswer('');setShowExample(false);if(index+1>=available.length){setStage('evaluation-intro');}else{setIndex(i=>i+1);}}
   function submitQuiz(){if(Object.keys(quizAnswers).length!==quiz.length)return;setAttempts(n=>n+1);setStage('result');}
@@ -64,48 +75,50 @@ export default function App() {
     <header className="brand-header"><a className="brand-home-link" href="/" aria-label="BellaTech — voltar à página inicial"><div className="logo" aria-hidden="true">✦</div><div className="brand-copy"><strong className="brand-name">Bella<span className="brand-tech">Tech</span></strong><small className="brand-subtitle">Desenvolvimento profissional e empregabilidade</small><span className="brand-audience">Para mulheres LGBTQIAPN+</span></div></a></header>
     <section className="hero"><div className="hero-content"><span className="hero-pill">✨ Interview Coach</span><h1>Pratique inglês para <em>entrevistas de emprego</em></h1><p>Desenvolva suas habilidades de comunicação em inglês, conquiste mais confiança e amplie suas oportunidades de carreira.</p><ul className="hero-benefits"><li>▣ &nbsp; Perguntas de entrevistas profissionais</li><li>✦ &nbsp; Traduções, dicas e exemplos</li><li>↗ &nbsp; Avaliação para acompanhar seu aprendizado</li></ul><a className="hero-cta" href="#disciplina">Começar treino gratuito <span aria-hidden="true">→</span></a></div><div className="hero-bottom"><span>◎ &nbsp; Situações reais de trabalho</span><span>▤ &nbsp; Diferentes áreas profissionais</span><span>▥ &nbsp; Evolução no seu ritmo</span><span>♧ &nbsp; Ambiente seguro e inclusivo</span></div></section>
     <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
-      <p className="eyebrow">MY FIRST JOB INTERVIEW</p><h2>Minha primeira entrevista em inglês</h2>
-      <p>Aprenda em quatro etapas: preparação, aprendizagem guiada, prática e avaliação final. Você poderá estudar exemplos antes de responder. A avaliação verifica apenas este conteúdo, não sua proficiência geral.</p>
-      {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setIndex(0);setAnswer('');setPracticeAnswers([]);setQuizAnswers({});setShowExample(false);setGuidedIndex(0);setStage('preparation');}}>
-        <label htmlFor="area">Área profissional</label><select id="area" value={area} onChange={e=>setArea(e.target.value)}>{Object.entries(areas).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
-        <label htmlFor="level">Seu nível de inglês</label><select id="level" value={level} onChange={e=>setLevel(e.target.value)}>{Object.entries(levels).map(([key,value])=><option key={key} value={key}>{value}</option>)}</select>
-        <button type="submit">Começar minha jornada →</button>
+      <p className="eyebrow">SUA JORNADA BELLATECH</p><h2>Inglês para oportunidades profissionais</h2>
+      <p>Responda sobre seu objetivo e seu inglês para receber uma sugestão inicial. Você poderá escolher outra trilha. Esta recomendação não é um teste de proficiência.</p>
+      {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setStage('paths')}}>
+       <label htmlFor="goal">Objetivo profissional</label><select id="goal" value={goal} onChange={e=>setGoal(e.target.value)}>{Object.entries(goals).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
+       <label htmlFor="area">Área de interesse</label><select id="area" value={area} onChange={e=>setArea(e.target.value)}>{Object.entries(areas).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
+       <label htmlFor="level">Como você avalia seu inglês?</label><select id="level" value={level} onChange={e=>setLevel(e.target.value)}>{Object.entries(levels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
+       <p className="privacy-note">Diagnóstico inicial demonstrativo baseado em autoavaliação. Atividades para estimar o nível ainda não foram implementadas.</p><button type="submit">Ver trilhas de aprendizagem →</button>
       </form>}
-      {stage==='intro' && <div className="journey-list" aria-label="Etapas da aprendizagem">
-        {[['01','Preparação','Conheça expressões essenciais e como funciona uma entrevista.'],['02','Aprendizagem guiada','Leia traduções, respostas-modelo e dicas.'],['03','Prática','Escreva suas respostas e pratique no seu ritmo.'],['04','Avaliação final','Verifique o que aprendeu e revise as respostas.']].map(([n,title,desc])=><div className="journey-step" key={n}><span className="journey-number">{n}</span><div><strong>{title}</strong><p>{desc}</p></div></div>)}
+      {stage==='paths' && <div className="training"><p className="progress">ESCOLHA SUA TRILHA</p><h3>Sua jornada de aprendizagem</h3><p>{goals[goal]} • {areas[area]} • {levels[level]}</p>
+       <div className="path-list">{paths.map(p=><article className="path-card" key={p.id}><strong>{p.title}</strong>{recommended===p.id&&<span className="path-tag">Recomendada para você</span>}<p>{p.id==='fundamentos'?'Apresentações e frases essenciais.':p.id==='entrevista'?'Perguntas e respostas de entrevistas.':'Expressões para o ambiente de trabalho.'}</p><button type="button" onClick={()=>choosePath(p.id)}>{recommended===p.id?'Começar recomendada →':'Escolher esta trilha →'}</button></article>)}</div>
+       <p className="tip">Neste MVP, as trilhas compartilham exercícios demonstrativos. Conteúdos específicos ainda serão desenvolvidos.</p><button type="button" className="secondary" onClick={()=>setStage('intro')}>Alterar respostas</button>
       </div>}
       {stage==='preparation' && <div className="training">
-        <p className="progress">ETAPA 1 DE 4 • Preparação</p><div className="progress-track"><div style={{width:'25%'}}/></div>
+        <p className="progress">ETAPA 1 DE 4 • Preparação • {paths.find(p=>p.id===path)?.title}</p><div className="progress-track"><div style={{width:'25%'}}/></div>
         <h3>Seu primeiro contato com entrevistas em inglês</h3>
         <p>Você não precisa falar inglês perfeitamente para começar. Nesta jornada, vamos estudar perguntas comuns e construir respostas simples, uma etapa por vez.</p>
-        <div className="learning-card"><strong>Expressões para começar</strong><p><b>Hello!</b> — Olá!</p><p><b>My name is...</b> — Meu nome é...</p><p><b>I am learning English.</b> — Estou aprendendo inglês.</p><p><b>Thank you for the opportunity.</b> — Obrigada pela oportunidade.</p></div>
+        <div className="learning-card"><strong>Expressões para começar</strong><p><b>Hello!</b> — Olá!</p><p><b>My name is...</b> — Meu nome é...</p><p><b>I am learning English.</b> — Estou aprendendo inglês.</p><p><b>Thank you for the opportunity.</b> — Obrigada pela oportunidade.</p><AudioControls en="Hello! My name is Ana. I am learning English. Thank you for the opportunity." pt="Olá! Meu nome é Ana. Estou aprendendo inglês. Obrigada pela oportunidade."/></div>
         <p className="tip">Dica: use respostas verdadeiras e curtas. Você pode estudar cada exemplo antes de escrever.</p>
         <div className="actions"><button type="button" className="secondary" onClick={restart}>Voltar</button><button type="button" onClick={()=>setStage('guided')}>Continuar para aprendizagem →</button></div>
       </div>}
       {stage==='guided' && <div className="training">
         <p className="progress">ETAPA 2 DE 4 • Aprendizagem guiada • {guidedIndex+1} de {available.length}</p><div className="progress-track"><div style={{width:(25+25*(guidedIndex+1)/available.length)+'%'}}/></div>
         <h3>Aprenda com uma pergunta de entrevista</h3>
-        <div className="learning-card"><strong>{guided.en}</strong><p><b>Tradução:</b> {guided.pt}</p></div>
-        <div className="learning-card"><strong>Exemplo de resposta</strong><p>{guided.sample}</p><small>Este é apenas um modelo. Use sua própria experiência na prática.</small></div>
+        <div className="learning-card"><strong>{guided.en}</strong><p><b>Tradução:</b> {guided.pt}</p><AudioControls en={guided.en} pt={guided.pt}/></div>
+        <div className="learning-card"><strong>Exemplo de resposta</strong><p>{guided.sample}</p><AudioControls en={guided.sample}/><small>Este é apenas um modelo. Use sua própria experiência na prática.</small></div>
         <p className="tip"><strong>Dica da BellaTech:</strong> {guided.tip}</p>
         <div className="actions"><button type="button" className="secondary" onClick={()=>guidedIndex===0?setStage('preparation'):setGuidedIndex(i=>i-1)}>Voltar</button><button type="button" onClick={()=>{if(guidedIndex+1>=available.length){setIndex(0);setStage('practice')}else setGuidedIndex(i=>i+1)}}>{guidedIndex+1>=available.length?'Começar a praticar →':'Próximo exemplo →'}</button></div>
       </div>}
       {stage==='practice' && <div className="training">
         <p className="progress">ETAPA 3 DE 4 • Prática {index+1} de {available.length}</p>
         <div className="progress-track"><div style={{width:(50+(index+1)/available.length*25)+'%'}}/></div>
-        <h3>{current.en}</h3><p><strong>Tradução:</strong> {current.pt}</p>
+        <h3>{current.en}</h3><p><strong>Tradução:</strong> {current.pt}</p><AudioControls en={current.en} pt={current.pt}/>
         <label htmlFor="answer">Sua resposta em inglês <span aria-hidden="true">*</span></label>
         <textarea id="answer" rows={4} required value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Escreva sua resposta em inglês. Não inclua informações pessoais."/>
         <p className="tip"><strong>Dica:</strong> {current.tip}</p>
         <button type="button" className="secondary" onClick={()=>setShowExample(v=>!v)}>{showExample?'Ocultar exemplo':'Ver resposta de exemplo'}</button>
-        {showExample && <div className="output"><strong>Exemplo para estudar:</strong><p>{current.sample}</p><small>Adapte ao seu contexto; não invente experiências.</small></div>}
+        {showExample && <div className="output"><strong>Exemplo para estudar:</strong><p>{current.sample}</p><AudioControls en={current.sample}/><small>Adapte ao seu contexto; não invente experiências.</small></div>}
         <div className="actions"><button type="button" className="secondary" onClick={restart}>Sair do treino</button><button type="button" disabled={!answer.trim()} onClick={advancePractice}>{index+1>=available.length?'Concluir prática →':'Próxima pergunta →'}</button></div>
       </div>}
       {stage==='evaluation-intro' && <div className="training">
         <p className="progress">ETAPA 4 DE 4 • Avaliação final</p><div className="progress-track"><div style={{width:'100%'}}/></div>
         <h3>Você concluiu a prática!</h3><p>Agora você pode avaliar o que aprendeu. São dez questões sobre as expressões estudadas, com explicações ao final. A meta demonstrativa é acertar sete questões.</p>
-        <p className="tip">A avaliação é sobre o conteúdo da jornada, não sobre sua capacidade profissional ou fluência.</p>
-        <div className="actions"><button type="button" className="secondary" onClick={()=>{setIndex(available.length-1);setStage('practice')}}>Revisar prática</button><button type="button" onClick={()=>setStage('quiz')}>Iniciar avaliação →</button></div>
+        <p className="tip">A avaliação é opcional e aborda o conteúdo da jornada, não sua capacidade profissional ou fluência.</p>
+        <div className="actions"><button type="button" className="secondary" onClick={()=>{setIndex(available.length-1);setStage('practice')}}>Revisar prática</button><button type="button" onClick={()=>setStage('quiz')}>Iniciar avaliação opcional →</button><button type="button" className="secondary" onClick={restart}>Concluir sem avaliação</button></div>
       </div>}
       {stage==='quiz' && <div className="training">
         <p className="progress">ETAPA 4 DE 4 • Avaliação final</p>
