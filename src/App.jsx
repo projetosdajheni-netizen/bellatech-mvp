@@ -32,7 +32,34 @@ const goals={entrevista:'Preparar-me para entrevistas',trabalho:'Comunicar-me no
 const paths=[{id:'fundamentos',title:'Fundamentos do inglês profissional'},{id:'entrevista',title:'Inglês para entrevistas'},{id:'trabalho',title:'Comunicação no trabalho'}];
 function AudioControls({en,pt}) {
  const [slow,setSlow]=useState(false);const [notice,setNotice]=useState('');
- function speak(t,lang){if(typeof window==='undefined'||!('speechSynthesis' in window)){setNotice('Áudio indisponível neste navegador.');return;}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=slow?.75:1;u.onerror=()=>setNotice('Não foi possível reproduzir o áudio.');window.speechSynthesis.speak(u);}
+ function speak(t,lang){
+  if(typeof window==='undefined'||!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){setNotice('Áudio indisponível neste navegador.');return;}
+  const synth=window.speechSynthesis;
+  synth.cancel();
+  const normalize=value=>(value||'').toLowerCase().replace(/_/g,'-');
+  const selectVoice=()=>{
+   const voices=synth.getVoices();
+   const matching=voices.filter(v=>normalize(v.lang).startsWith(lang.slice(0,2).toLowerCase()));
+   const femaleHints=/female|feminina|woman|mulher|samantha|victoria|karen|moira|tessa|ava|allison|susan|zira|jenny|aria|sonia|natasha|joana|luciana|francisca|helena|maria|paulina|camila|google português do brasil|google us english/i;
+   const maleHints=/male|masculin|daniel|david|mark|alex|fred|jorge|felipe|ricardo|pedro|carlos/i;
+   const ranked=matching.map(v=>({voice:v,score:(normalize(v.lang)===normalize(lang)?5:0)+(femaleHints.test(v.name)?20:0)-(maleHints.test(v.name)?20:0)})).sort((a,b)=>b.score-a.score);
+   return ranked.find(v=>v.score>=20)?.voice||null;
+  };
+  const play=()=>{
+   const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=slow?.75:1;
+   const voice=selectVoice();
+   if(voice){u.voice=voice;setNotice('');}
+   else setNotice('Não há voz feminina identificável neste aparelho. Será usada a voz padrão disponível.');
+   u.onerror=()=>setNotice('Não foi possível reproduzir o áudio.');
+   synth.speak(u);
+  };
+  if(!synth.getVoices().length){
+   let started=false;
+   const onVoices=()=>{if(started)return;started=true;synth.removeEventListener?.('voiceschanged',onVoices);play();};
+   synth.addEventListener?.('voiceschanged',onVoices,{once:true});
+   setTimeout(onVoices,600);
+  }else play();
+ }
  return <div className="audio-controls"><button type="button" className="secondary" onClick={()=>speak(en,'en-US')}>🔊 Ouvir em inglês</button>{pt&&<button type="button" className="secondary" onClick={()=>speak(pt,'pt-BR')}>🔊 Ouvir em português</button>}<label><input type="checkbox" checked={slow} onChange={e=>setSlow(e.target.checked)}/> Áudio mais lento</label>{notice&&<small role="status">{notice}</small>}</div>;
 }
 export default function App() {
