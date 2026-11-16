@@ -320,3 +320,23 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
  .home-container .hero .hero-cta{font-size:13px}
  .home-container .hero-mobile-photo{height:215px}
 }
+
+/* Ajuste fino de espaçamento mobile + estrelas cadentes por toque */
+@media(max-width:700px){
+ .home-container .brand-header{margin-bottom:12px}
+ .home-container .hero{padding-top:20px}
+ .home-container .hero-content{padding:0 21px 13px}
+ .home-container .hero .hero-pill{padding:7px 12px}
+ .home-container .hero h1{font-size:clamp(29px,7.5vw,39px);line-height:1.11;margin:14px 0 12px;letter-spacing:-.03em}
+ .home-container .hero p{font-size:14px;line-height:1.5;margin:0 0 17px}
+ .home-container .hero .hero-cta{min-height:57px;padding:7px 10px 7px 13px}
+ .home-container .hero .hero-cta .hero-cta-arrow{width:38px;height:38px}
+ .home-container .hero-mobile-photo{height:clamp(205px,53vw,315px)}
+ .home-container .hero-bottom span{padding:10px 7px;font-size:10.5px;line-height:1.35}
+ .home-container .shooting-stars{z-index:3}
+}
+@media(max-width:390px){
+ .home-container .hero-content{padding-inline:17px;padding-bottom:12px}
+ .home-container .hero h1{font-size:29px}
+ .home-container .hero-mobile-photo{height:205px}
+}
