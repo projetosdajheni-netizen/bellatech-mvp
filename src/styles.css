@@ -123,3 +123,23 @@ header.brand-header > a.brand-home-link .brand-audience{color:#66348d}
 .path-card button.recommended-path-button{background:#ED5BA7;color:#fff}
 .path-card button.recommended-path-button:not(:disabled):hover{background:#D93D91}
 .path-card button.recommended-path-button:focus-visible{outline:3px solid #672f9d;outline-offset:3px}
+
+/* Mapa interativo de módulos: desbloqueio progressivo */
+.module-progress{background:#f7f0fc;border-radius:13px;padding:15px;margin:16px 0 22px;color:#512280}
+.module-progress .progress-track{margin-top:10px}
+.module-map{display:grid;gap:14px;margin:20px 0}
+.module-tile{display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;align-items:center;background:#fff9ff;border:1px solid #e5cdeb;border-radius:17px;padding:17px}
+.module-icon{display:grid;place-items:center;width:50px;height:50px;border-radius:14px;background:#f8d8ec;color:#8b286d;font-size:24px;font-weight:800}
+.module-details{min-width:0}
+.module-details strong{display:block;color:#512280;font-size:17px}
+.module-details p{margin:6px 0;font-size:14px}
+.module-details small{color:#6d4a7d;font-weight:650}
+.module-tile button{grid-column:2;justify-self:start}
+.module-locked{background:#f7f5f9;border-color:#e5e0e9}
+.module-locked .module-icon{background:#ebe7ef}
+.module-locked .module-details strong,.module-locked .module-details small{color:#716a78}
+.module-final{border:1px solid #e3d3ed;background:#f7f0fc;border-radius:16px;padding:18px;margin:18px 0}
+.module-final strong{color:#512280;font-size:18px}
+.module-final p{margin:8px 0 12px}
+.module-final span{color:#695877;font-weight:650}
+@media(max-width:480px){.module-tile{grid-template-columns:43px minmax(0,1fr);padding:13px;gap:10px}.module-icon{width:42px;height:42px}.module-tile button{grid-column:1/-1;width:100%}}
