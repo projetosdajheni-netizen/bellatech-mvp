@@ -403,3 +403,13 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .journey-gate-primary{display:block;width:100%;border-radius:999px;padding:13px 18px}
 .journey-gate-visitor{display:block;margin:10px auto 0;font-size:13px}
 @media(max-width:700px){.journey-gate h2{font-size:21px}.journey-gate-benefits{font-size:13px}}
+
+/* Certificado de conclusão após o Desafio Final */
+.certificate-access{background:#f9f0fc;border:1px solid #e5c8ec;border-radius:18px;padding:20px;margin:22px 0;color:#452a56;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.certificate-access h3{margin:0;font-size:20px}
+.certificate-access p{margin:0 0 4px;line-height:1.55}
+.certificate-access label{font-size:13px;font-weight:700}
+.certificate-access input{width:100%;max-width:430px;box-sizing:border-box;padding:12px;border-radius:9px;border:1px solid #cfa7db;background:white;color:#352044;font:inherit}
+.certificate-access button{border-radius:999px;padding:12px 18px}
+.certificate-home{margin:18px 0 24px}
+@media(max-width:700px){.certificate-access{padding:16px}.certificate-access button{width:100%}}
