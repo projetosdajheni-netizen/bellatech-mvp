@@ -490,3 +490,13 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .home-container .hero-mobile-photo .hero-photo-star-zone{display:none}
 @media(max-width:700px){.home-container .hero>.hero-photo-star-zone{display:none}.home-container .hero-mobile-photo .hero-photo-star-zone{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:2}}
 @media(prefers-reduced-motion:reduce){.home-container .hero-photo-star-zone .shooting-stars{display:none}}
+
+/* Original star trail, limited to each approved photograph. */
+.photo-stars-area{position:relative;overflow:hidden}
+.photo-stars-overlay{position:absolute;inset:0;z-index:5;overflow:hidden;pointer-events:none;border-radius:inherit}
+.photo-stars-overlay .shooting-star{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 7px 3px #ffb5e9,0 0 18px 6px rgba(245,91,214,.7);transform:translate(-50%,-50%);animation:bellatech-shooting-star .85s ease-out forwards;will-change:transform,opacity}
+.photo-stars-overlay .shooting-star::before{content:"";position:absolute;right:3px;top:3px;width:95px;height:3px;border-radius:99px;background:linear-gradient(90deg,transparent,rgba(255,146,226,.25),#ffd6f7);transform-origin:right center;transform:rotate(-32deg)}
+.photo-stars-overlay .shooting-star::after{content:"✦";position:absolute;left:-3px;top:-8px;font-size:17px;color:#fff;filter:drop-shadow(0 0 5px #ffc3f0)}
+.home-community-section>.home-community-photo{padding:0;min-width:0;height:100%;min-height:280px}
+.home-community-section>.home-community-photo>img{display:block;width:100%;height:100%;max-height:410px;min-height:280px;object-fit:cover}
+@media(prefers-reduced-motion:reduce){.photo-stars-overlay{display:none}}
