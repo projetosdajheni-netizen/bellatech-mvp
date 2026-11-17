@@ -436,7 +436,7 @@ export default function App() {
           <p>Depois de estudar as perguntas de entrevista, experimente escrever sua própria resposta em inglês e receba orientações personalizadas. Esta atividade é opcional e não interfere no Desafio Final ou no certificado.</p>
           {unlocked>=4?<button type="button" onClick={()=>{setCoachError('');setStage('ai-coach');window.scrollTo({top:0,behavior:'smooth'});}}>✨ Praticar entrevista com IA →</button>:<p className="coach-journey-hint">🔒 Disponível após concluir o módulo 4 — Minha primeira entrevista. Você também pode experimentar a demonstração pela página inicial.</p>}
         </section>
-        {session&&(savedScore??0)>=7&&<section className="certificate-access"><h3>🎓 Seu certificado está disponível</h3><p>Você já alcançou pelo menos 7/10 no Desafio Final. Não precisa refazer a jornada.</p><label htmlFor="certificate-map-name">Nome no certificado</label><input id="certificate-map-name" type="text" maxLength={120} value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando...':'Baixar meu certificado em PDF'}</button>{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
+        
         <div className="module-extras">
          <article className="module-extra-card">
           <div className="module-extra-cover final-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/certificado%20final.png" alt="Participante comemorando a conclusão de sua jornada profissional" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
@@ -457,6 +457,7 @@ export default function App() {
           </div>
          </article>
         </div>
+        {session&&(savedScore??0)>=7&&<section className="certificate-access"><h3>🎓 Seu certificado está disponível</h3><p>Você já alcançou pelo menos 7/10 no Desafio Final. Não precisa refazer a jornada.</p><label htmlFor="certificate-map-name">Nome no certificado</label><input id="certificate-map-name" type="text" maxLength={120} value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando...':'Baixar meu certificado em PDF'}</button>{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
         <button type="button" className="secondary" onClick={()=>setStage('paths')}>Voltar às trilhas</button>
       </div>}
       {stage==='module-activity' && <div className="training">
