@@ -1,6 +1,6 @@
 // BellaTech AI Coach: authenticated, opt-in interview feedback.
 // No answers are persisted by this endpoint. Keep provider keys server-side.
-const MODEL='gemini-2.5-flash-lite';
+const MODEL='gemini-3.5-flash-lite';
 const limits=new Map();
 // Public diagnostics contain only a controlled code; never return provider payloads or credentials.
 function providerFailure(status){
