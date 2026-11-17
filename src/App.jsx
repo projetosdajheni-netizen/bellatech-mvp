@@ -51,12 +51,32 @@ const modulePhotos=[
  ['bellatech_capa_modulo_3.jpg','Mulher 50+ apresentando suas habilidades'],
  ['bellatech_capa_modulo_4.jpg','Mulher em entrevista profissional']
 ];
+function PhotoStars({className='',children,...props}){
+ const [stars,setStars]=useState([]);
+ const counter=useRef(0);
+ const lastTime=useRef(0);
+ function addStar(event){
+  if(typeof window==='undefined'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(!['mouse','touch','pen'].includes(event.pointerType))return;
+  const now=Date.now();
+  if(now-lastTime.current<210)return;
+  const bounds=event.currentTarget.getBoundingClientRect();
+  const x=event.clientX-bounds.left,y=event.clientY-bounds.top;
+  if(x<0||y<0||x>bounds.width||y>bounds.height)return;
+  lastTime.current=now;
+  setStars(current=>[...current.slice(-7),{id:++counter.current,x,y}]);
+ }
+ return <div {...props} className={className+' photo-stars-area'} onPointerMove={addStar} onPointerDown={event=>{if(event.pointerType!=='mouse')addStar(event);}}>
+  {children}
+  <div className="photo-stars-overlay" aria-hidden="true">{stars.map(star=><span key={star.id} className="shooting-star" style={{left:star.x,top:star.y}} onAnimationEnd={()=>setStars(current=>current.filter(item=>item.id!==star.id))}/>)}</div>
+ </div>;
+}
 function ModuleCover({variant,locked}){
  const [filename,description]=modulePhotos[variant];
- return <div className={'module-cover module-photo-cover module-cover-'+variant+(locked?' cover-locked':'')}>
+ return <PhotoStars className={'module-cover module-photo-cover module-cover-'+variant+(locked?' cover-locked':'')}>
   <img src={'https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/'+filename} alt={description} loading="lazy"/>
   {locked&&<span className="module-cover-lock" aria-label="Módulo bloqueado">🔒</span>}
- </div>;
+ </PhotoStars>;
 }
 function AudioControls({en,pt}) {
  const [slow,setSlow]=useState(false);const [notice,setNotice]=useState('');
@@ -485,7 +505,7 @@ export default function App() {
         
         <div className="module-extras">
          <article className="module-extra-card">
-          <div className="module-extra-cover final-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/certificado%20final.png" alt="Participante comemorando a conclusão de sua jornada profissional" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
+          <PhotoStars className="module-extra-cover final-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/certificado%20final.png" alt="Participante comemorando a conclusão de sua jornada profissional" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></PhotoStars>
           <div className="module-extra-body">
            <span className={'module-status '+(unlocked===4?'status-ready':'status-locked')}>{unlocked===4?'✦ Disponível':'🔒 Bloqueado'}</span>
            <strong>🏆 Desafio final</strong>
@@ -494,7 +514,7 @@ export default function App() {
           </div>
          </article>
          <article className="module-extra-card">
-          <div className="module-extra-cover community-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/comunidade.png" alt="Mulheres de diferentes idades conversando e compartilhando experiências profissionais" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></div>
+          <PhotoStars className="module-extra-cover community-cover"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/comunidade.png" alt="Mulheres de diferentes idades conversando e compartilhando experiências profissionais" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden'}}/></PhotoStars>
           <div className="module-extra-body">
            <span className="module-status status-community">🤝 Em planejamento</span>
            <strong>Comunidade BellaTech</strong>
@@ -587,7 +607,7 @@ export default function App() {
         <button type="button" className="home-path-button" onClick={requestJourneyStart}>Explorar minha jornada <span aria-hidden="true">→</span></button>
       </section>
       <section className="home-community-section" aria-labelledby="home-community-title">
-        <img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/comunidade.png" alt="Participantes compartilhando experiências em grupo" loading="lazy"/>
+        <PhotoStars className="home-community-photo"><img src="https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/comunidade.png" alt="Participantes compartilhando experiências em grupo" loading="lazy"/></PhotoStars>
         <div><span className="home-kicker">CONEXÕES QUE IMPORTAM</span><h2 id="home-community-title">Comunidade BellaTech</h2><p>Estamos planejando um espaço de troca de experiências, apoio e conexões profissionais entre participantes.</p><span className="home-future-label">Em planejamento · ainda não disponível no protótipo</span></div>
       </section>
     </div>}
