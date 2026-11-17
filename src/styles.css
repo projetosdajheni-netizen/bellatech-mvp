@@ -471,3 +471,12 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .footer-brand .brand-name{display:block;font-size:clamp(27px,3.4vw,36px);font-weight:800;line-height:1.12;letter-spacing:-.8px;color:#50217b}
 .footer-brand .logo-shooting-star svg{width:66px;height:61px}
 @media(max-width:700px){.footer-brand .brand-name{font-size:29px}.footer-brand .logo-shooting-star svg{width:56px;height:52px}}
+
+/* Header refresh: strong brand and clear account action */
+.brand-header .brand-name{font-size:clamp(34px,3.8vw,44px);letter-spacing:-1.25px;line-height:1.06}
+.brand-header .brand-subtitle{font-size:14px;line-height:1.45;font-weight:600;color:#674978}
+.brand-header .brand-home-link .logo-shooting-star svg{width:65px;height:61px}
+.brand-header .auth-header-actions .header-login-button{background:#592583;color:#fff;border:2px solid #592583;border-radius:12px;padding:12px 20px;font-weight:750;box-shadow:0 4px 12px #59258320;cursor:pointer}
+.brand-header .auth-header-actions .header-login-button:hover{background:#46176c;border-color:#46176c;color:#fff}
+.brand-header .auth-header-actions .header-login-button:focus-visible{outline:3px solid #b36ad4;outline-offset:3px}
+@media(max-width:600px){.brand-header .brand-name{font-size:clamp(29px,7vw,36px)}.brand-header .brand-subtitle{font-size:12px}.brand-header .brand-home-link .logo-shooting-star svg{width:48px;height:48px}.brand-header .auth-header-actions .header-login-button{padding:10px 12px;font-size:12px}}
