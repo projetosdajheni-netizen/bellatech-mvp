@@ -430,6 +430,12 @@ export default function App() {
           </div>
           <div className="module-card-action">{i<=unlocked?<button type="button" onClick={()=>openModule(i)}>{i<unlocked?'Revisar módulo':'Começar módulo →'}</button>:<button type="button" disabled aria-label={'Módulo '+(i+1)+' bloqueado'}>🔒 Bloqueado</button>}</div>
         </article>)}</div>
+        <section className="coach-journey-card" aria-label="Prática complementar de entrevista com IA">
+          <span className="coach-eyebrow">✨ PRÁTICA COMPLEMENTAR • IA EXPERIMENTAL</span>
+          <h3>Pratique sua entrevista com o BellaTech AI Coach</h3>
+          <p>Depois de estudar as perguntas de entrevista, experimente escrever sua própria resposta em inglês e receba orientações personalizadas. Esta atividade é opcional e não interfere no Desafio Final ou no certificado.</p>
+          {unlocked>=4?<button type="button" onClick={()=>{setCoachError('');setStage('ai-coach');window.scrollTo({top:0,behavior:'smooth'});}}>✨ Praticar entrevista com IA →</button>:<p className="coach-journey-hint">🔒 Disponível após concluir o módulo 4 — Minha primeira entrevista. Você também pode experimentar a demonstração pela página inicial.</p>}
+        </section>
         {session&&(savedScore??0)>=7&&<section className="certificate-access"><h3>🎓 Seu certificado está disponível</h3><p>Você já alcançou pelo menos 7/10 no Desafio Final. Não precisa refazer a jornada.</p><label htmlFor="certificate-map-name">Nome no certificado</label><input id="certificate-map-name" type="text" maxLength={120} value={certificateName} onChange={e=>setCertificateName(e.target.value)} placeholder="Seu nome completo"/><button type="button" onClick={issueCertificate} disabled={certificateBusy||!progressLoaded}>{certificateBusy?'Preparando...':'Baixar meu certificado em PDF'}</button>{certificateError&&<p role="alert" className="auth-error">{certificateError}</p>}</section>}
         <div className="module-extras">
          <article className="module-extra-card">
