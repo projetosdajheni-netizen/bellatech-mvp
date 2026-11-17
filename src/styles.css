@@ -480,10 +480,3 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .brand-header .auth-header-actions .header-login-button:hover{background:#46176c;border-color:#46176c;color:#fff}
 .brand-header .auth-header-actions .header-login-button:focus-visible{outline:3px solid #b36ad4;outline-offset:3px}
 @media(max-width:600px){.brand-header .brand-name{font-size:clamp(29px,7vw,36px)}.brand-header .brand-subtitle{font-size:12px}.brand-header .brand-home-link .logo-shooting-star svg{width:48px;height:48px}.brand-header .auth-header-actions .header-login-button{padding:10px 12px;font-size:12px}}
-
-/* Reuse the original shooting-star animation throughout the app */
-.shooting-stars-global{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
-.shooting-stars-global .shooting-star{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 7px 3px #ffb5e9,0 0 18px 6px rgba(245,91,214,.7);transform:translate(-50%,-50%);animation:bellatech-shooting-star .85s ease-out forwards;will-change:transform,opacity}
-.shooting-stars-global .shooting-star::before{content:"";position:absolute;right:3px;top:3px;width:95px;height:3px;border-radius:99px;background:linear-gradient(90deg,transparent,rgba(255,146,226,.25),#ffd6f7);transform-origin:right center;transform:rotate(-32deg)}
-.shooting-stars-global .shooting-star::after{content:"✦";position:absolute;left:-3px;top:-8px;font-size:17px;color:#fff;filter:drop-shadow(0 0 5px #ffc3f0)}
-@media(prefers-reduced-motion:reduce){.shooting-stars-global{display:none}}
