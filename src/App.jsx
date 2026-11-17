@@ -602,7 +602,7 @@ export default function App() {
       <section className="home-path-section" aria-labelledby="home-path-title">
         <div className="home-section-heading"><span className="home-kicker">CONHEÇA A EXPERIÊNCIA</span><h2 id="home-path-title">Sua jornada de desenvolvimento profissional</h2><p>Comece pelos fundamentos e desenvolva novas competências no seu ritmo, com atividades práticas e apoio da inteligência artificial.</p></div>
         <div className="home-path-grid">
-          {learningModules.map((module,i)=><article className="home-path-card" key={i}><div className="home-path-image"><img src={'https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/bellatech_capa_modulo_'+(i+1)+'.jpg'} alt="" loading="lazy"/></div><div className="home-path-info"><span>0{i+1} · MÓDULO</span><h3>{module.title}</h3></div></article>)}
+          {learningModules.map((module,i)=><article className="home-path-card" key={i}><PhotoStars className="home-path-image"><img src={'https://raw.githubusercontent.com/projetosdajheni-netizen/bellatech-mvp/main/bellatech_capa_modulo_'+(i+1)+'.jpg'} alt="" loading="lazy"/></PhotoStars><div className="home-path-info"><span>0{i+1} · MÓDULO</span><h3>{module.title}</h3></div></article>)}
         </div>
         <button type="button" className="home-path-button" onClick={requestJourneyStart}>Explorar minha jornada <span aria-hidden="true">→</span></button>
       </section>
