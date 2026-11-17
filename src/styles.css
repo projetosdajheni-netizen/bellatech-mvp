@@ -440,3 +440,10 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .coach-journey-card p{color:#64536d;line-height:1.55}
 .coach-journey-card button{border:0;border-radius:12px;background:#71338c;color:white;padding:13px 20px;font-weight:700;cursor:pointer}
 .coach-journey-hint{font-size:14px}
+
+/* Password visibility control: keyboard and screen-reader accessible */
+.auth-password-field{position:relative;display:flex;align-items:center;width:100%}
+.auth-password-field input{width:100%;padding-right:54px}
+.auth-password-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0;border:0;border-radius:9px;background:transparent;color:#62317d;cursor:pointer}
+.auth-password-toggle:hover{background:#f3e7f8}
+.auth-password-toggle:focus-visible{outline:3px solid #873ba8;outline-offset:2px}
