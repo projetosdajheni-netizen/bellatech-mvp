@@ -434,3 +434,9 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .coach-feedback p{margin:7px 0 0;line-height:1.6}
 .coach-feedback small{color:#6b5a74}
 @media(max-width:640px){.coach-home{flex-direction:column;align-items:stretch;padding:20px}.coach-home button{width:100%}}
+
+.coach-journey-card{margin:24px 0;padding:24px;border:1px solid #dcbde9;border-radius:18px;background:linear-gradient(120deg,#fff9ff,#f5eafa)}
+.coach-journey-card h3{margin:10px 0;color:#512280;font-size:21px}
+.coach-journey-card p{color:#64536d;line-height:1.55}
+.coach-journey-card button{border:0;border-radius:12px;background:#71338c;color:white;padding:13px 20px;font-weight:700;cursor:pointer}
+.coach-journey-hint{font-size:14px}
