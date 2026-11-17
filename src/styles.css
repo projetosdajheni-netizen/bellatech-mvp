@@ -482,7 +482,7 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 @media(max-width:600px){.brand-header .brand-name{font-size:clamp(29px,7vw,36px)}.brand-header .brand-subtitle{font-size:12px}.brand-header .brand-home-link .logo-shooting-star svg{width:48px;height:48px}.brand-header .auth-header-actions .header-login-button{padding:10px 12px;font-size:12px}}
 
 /* Shooting stars react exclusively to the photograph, never the hero text or buttons. */
-.home-container .hero-photo-star-zone{position:absolute;top:0;right:0;bottom:0;width:61%;z-index:1;overflow:hidden;touch-action:pan-y}
+.home-container .hero-photo-star-zone{position:absolute;top:0;right:0;bottom:0;width:61%;z-index:3;overflow:hidden;pointer-events:none}
 .home-container .hero-photo-star-zone .shooting-stars{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;border-radius:inherit}
 .home-container .hero-photo-star-zone .shooting-star{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 7px 3px #ffb5e9,0 0 18px 6px rgba(245,91,214,.7);transform:translate(-50%,-50%);animation:bellatech-shooting-star .85s ease-out forwards;will-change:transform,opacity}
 .home-container .hero-photo-star-zone .shooting-star::before{content:"";position:absolute;right:3px;top:3px;width:95px;height:3px;border-radius:99px;background:linear-gradient(90deg,transparent,rgba(255,146,226,.25),#ffd6f7);transform-origin:right center;transform:rotate(-32deg)}
