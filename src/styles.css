@@ -465,3 +465,9 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .footer-legal-links span{font-size:13px}
 .auth-legal-note{font-size:13px;line-height:1.6;color:#62536b;margin-top:14px}
 .auth-legal-note button{color:#693089}
+
+/* Footer brand hierarchy: make BellaTech readable without changing the header */
+.footer-brand{gap:9px}
+.footer-brand .brand-name{display:block;font-size:clamp(27px,3.4vw,36px);font-weight:800;line-height:1.12;letter-spacing:-.8px;color:#50217b}
+.footer-brand .logo-shooting-star svg{width:66px;height:61px}
+@media(max-width:700px){.footer-brand .brand-name{font-size:29px}.footer-brand .logo-shooting-star svg{width:56px;height:52px}}
