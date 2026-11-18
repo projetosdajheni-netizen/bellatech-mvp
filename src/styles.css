@@ -530,3 +530,13 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .footer-art-links button:hover{background:rgba(98,40,145,.07)}
 .footer-art-links button:focus-visible{outline:3px solid #6d2d99;outline-offset:2px;background:rgba(255,255,255,.2)}
 @media(max-width:700px){.bellatech-footer.bellatech-footer-art{margin-top:30px}.footer-art-frame{min-width:680px}}
+
+/* Graceful fallback only when the approved footer image cannot load. */
+.footer-art-fallback{display:none;box-sizing:border-box;width:100%;padding:28px 18px;text-align:center;background:#f8f1fb;border:1px solid #e9d9ef;border-radius:22px;color:#512078}
+.footer-art-fallback strong{font-size:30px;font-weight:850}.footer-art-fallback strong span{color:#a24dc2}
+.footer-art-fallback p{font-size:13px;margin:12px 0}
+.footer-art-fallback nav{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px}
+.footer-art-fallback nav button{background:none;border:0;color:#6d4687;text-decoration:underline;cursor:pointer}
+.footer-art-frame.footer-art-failed{min-width:0;aspect-ratio:auto}
+.footer-art-failed>.footer-art-image,.footer-art-failed>.footer-art-links{display:none}
+.footer-art-failed>.footer-art-fallback{display:block}
