@@ -507,3 +507,13 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .bellatech-footer .footer-brand .brand-copy{align-items:center;text-align:center}
 .bellatech-footer .footer-disclaimer{width:fit-content;max-width:100%;margin-inline:auto;text-align:center}
 .bellatech-footer .footer-legal-links{width:100%;display:flex;align-items:center;justify-content:center;text-align:center}
+
+/* Footer accessibility preview: approved portrait beside an upcoming-features note. */
+.bellatech-footer{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,320px);align-items:center}
+.bellatech-footer>.footer-rainbow{grid-column:1/-1;width:100%}
+.bellatech-footer>.footer-inner{grid-column:1;min-width:0}
+.bellatech-footer>.footer-accessibility{grid-column:2;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 14px 12px 0;min-width:0}
+.footer-accessibility-message{font-size:12px;line-height:1.4;font-weight:750;color:#572078;background:#eddaf7;border-radius:20px;padding:12px;max-width:145px;text-align:center}
+.footer-accessibility-message span{display:block;font-size:20px;margin-bottom:4px}
+.footer-accessibility img{display:block;width:115px;height:115px;object-fit:cover;object-position:center;border-radius:18px;flex-shrink:0}
+@media(max-width:700px){.bellatech-footer{grid-template-columns:minmax(0,1fr)}.bellatech-footer>.footer-inner{grid-column:1}.bellatech-footer>.footer-accessibility{grid-column:1;flex-direction:row;justify-content:center;padding:4px 14px 18px}.footer-accessibility img{width:94px;height:94px}.footer-accessibility-message{max-width:175px}}
