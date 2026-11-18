@@ -515,5 +515,5 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .bellatech-footer>.footer-accessibility{grid-column:2;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 14px 12px 0;min-width:0}
 .footer-accessibility-message{font-size:12px;line-height:1.4;font-weight:750;color:#572078;background:#eddaf7;border-radius:20px;padding:12px;max-width:145px;text-align:center}
 .footer-accessibility-message span{display:block;font-size:20px;margin-bottom:4px}
-.footer-accessibility img{display:block;width:115px;height:115px;object-fit:cover;object-position:center;border-radius:18px;flex-shrink:0}
-@media(max-width:700px){.bellatech-footer{grid-template-columns:minmax(0,1fr)}.bellatech-footer>.footer-inner{grid-column:1}.bellatech-footer>.footer-accessibility{grid-column:1;flex-direction:row;justify-content:center;padding:4px 14px 18px}.footer-accessibility img{width:94px;height:94px}.footer-accessibility-message{max-width:175px}}
+.footer-accessibility img{display:block;width:145px;height:145px;object-fit:cover;object-position:right center;border-radius:18px;flex-shrink:0}
+@media(max-width:700px){.bellatech-footer{grid-template-columns:minmax(0,1fr)}.bellatech-footer>.footer-inner{grid-column:1}.bellatech-footer>.footer-accessibility{grid-column:1;flex-direction:row;justify-content:center;padding:4px 14px 18px}.footer-accessibility img{width:112px;height:112px;object-position:right center}.footer-accessibility-message{max-width:175px}}
