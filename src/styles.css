@@ -540,3 +540,8 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .footer-art-frame.footer-art-failed{min-width:0;aspect-ratio:auto}
 .footer-art-failed>.footer-art-image,.footer-art-failed>.footer-art-links{display:none}
 .footer-art-failed>.footer-art-fallback{display:block}
+
+/* Stars are interactive only over the portrait portion of the approved footer art. */
+.footer-art-frame>.footer-portrait-stars{position:absolute;left:73%;top:7%;width:26%;height:91%;z-index:2;overflow:hidden;border-radius:18px;background:transparent}
+.footer-art-frame>.footer-portrait-stars .photo-stars-overlay{position:absolute;inset:0;z-index:1;pointer-events:none}
+.footer-art-failed>.footer-portrait-stars{display:none}
