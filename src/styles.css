@@ -517,3 +517,16 @@ body:has(.home-container){background:radial-gradient(ellipse at 12% 12%,rgba(249
 .footer-accessibility-message span{display:block;font-size:20px;margin-bottom:4px}
 .footer-accessibility img{display:block;width:145px;height:145px;object-fit:cover;object-position:right center;border-radius:18px;flex-shrink:0}
 @media(max-width:700px){.bellatech-footer{grid-template-columns:minmax(0,1fr)}.bellatech-footer>.footer-inner{grid-column:1}.bellatech-footer>.footer-accessibility{grid-column:1;flex-direction:row;justify-content:center;padding:4px 14px 18px}.footer-accessibility img{width:112px;height:112px;object-position:right center}.footer-accessibility-message{max-width:175px}}
+
+/* Approved full-size footer artwork: one image, no duplicated logo or text. */
+.bellatech-footer.bellatech-footer-art{display:block;overflow:visible;background:transparent;border:0;box-shadow:none;border-radius:0;padding:0!important;text-align:initial}
+.footer-art-scroll{width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+.footer-art-frame{position:relative;width:100%;min-width:680px;aspect-ratio:2048/684}
+.footer-art-image{display:block;width:100%;height:100%;object-fit:fill}
+.footer-art-links{position:absolute;inset:0;pointer-events:none}
+.footer-art-links button{position:absolute;pointer-events:auto;display:block;padding:0;margin:0;border:0;border-radius:6px;background:transparent;color:transparent;cursor:pointer}
+.footer-art-terms{left:10.5%;top:64%;width:14%;height:13%}
+.footer-art-privacy{left:26%;top:64%;width:21%;height:13%}
+.footer-art-links button:hover{background:rgba(98,40,145,.07)}
+.footer-art-links button:focus-visible{outline:3px solid #6d2d99;outline-offset:2px;background:rgba(255,255,255,.2)}
+@media(max-width:700px){.bellatech-footer.bellatech-footer-art{margin-top:30px}.footer-art-frame{min-width:680px}}
