@@ -306,6 +306,65 @@ export default function App() {
   const [coachFeedback,setCoachFeedback]=useState(null);
   const [coachBusy,setCoachBusy]=useState(false);
   const [coachError,setCoachError]=useState('');
+  const [coachListening,setCoachListening]=useState(false);
+  const [coachVoiceStatus,setCoachVoiceStatus]=useState('');
+  const [coachSpeaking,setCoachSpeaking]=useState(false);
+  const [coachPaused,setCoachPaused]=useState(false);
+  const coachRecognition=useRef(null);
+  const coachSpeechId=useRef(0);
+  useEffect(()=>()=>{coachRecognition.current?.abort();window.speechSynthesis?.cancel();},[]);
+  useEffect(()=>{if(stage==='ai-coach')return;coachRecognition.current?.abort();coachRecognition.current=null;setCoachListening(false);window.speechSynthesis?.cancel();setCoachSpeaking(false);setCoachPaused(false);},[stage]);
+  function toggleCoachDictation(){
+    if(coachListening){coachRecognition.current?.stop();return;}
+    const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!Recognition){setCoachVoiceStatus('Transcrição por voz indisponível neste navegador. Você pode digitar.');return;}
+    try{
+      const rec=new Recognition();rec.lang='en-US';rec.continuous=true;rec.interimResults=true;
+      const previous=coachAnswer.trim();
+      rec.onresult=e=>{
+        let words='';
+        for(let i=0;i<e.results.length;i++)words+=e.results[i][0].transcript+' ';
+        setCoachAnswer([previous,words.trim()].filter(Boolean).join(' ').slice(0,900));
+      };
+      rec.onerror=e=>setCoachVoiceStatus(e.error==='not-allowed'?'Permissão de microfone negada.':'Não foi possível reconhecer a fala. Tente novamente.');
+      rec.onend=()=>{setCoachListening(false);coachRecognition.current=null;};
+      coachRecognition.current=rec;rec.start();setCoachListening(true);
+      setCoachVoiceStatus('Fale em inglês e revise a transcrição antes de enviar.');
+    }catch{setCoachVoiceStatus('Não foi possível acessar o microfone.');setCoachListening(false);}
+  }
+  function stopCoachSpeech(){
+    coachSpeechId.current++;window.speechSynthesis?.cancel();setCoachSpeaking(false);setCoachPaused(false);
+  }
+  function speakCoachFeedback(){
+    if(!coachFeedback)return;
+    if(!window.speechSynthesis||!window.SpeechSynthesisUtterance){setCoachVoiceStatus('Leitura em voz alta indisponível neste navegador.');return;}
+    stopCoachSpeech();
+    const id=coachSpeechId.current,synth=window.speechSynthesis,voices=synth.getVoices();
+    const parts=[
+      {lang:'pt-BR',text:'Seu feedback personalizado. Ponto positivo. '+(coachFeedback.positivo||'')+'. O que melhorar. '+(coachFeedback.melhoria||'')+'. Agora, um exemplo em inglês.'},
+      {lang:'en-US',text:coachFeedback.exemplo||''}
+    ];
+    setCoachVoiceStatus('A voz feminina será utilizada quando disponível no dispositivo.');
+    setCoachSpeaking(true);
+    function play(i){
+      if(id!==coachSpeechId.current)return;
+      if(i===parts.length){setCoachSpeaking(false);setCoachPaused(false);return;}
+      const p=parts[i],utterance=new SpeechSynthesisUtterance(p.text);
+      utterance.lang=p.lang;utterance.rate=.92;utterance.pitch=1.08;
+      const candidates=voices.filter(v=>v.lang.toLowerCase().startsWith(p.lang.slice(0,2)));
+      utterance.voice=candidates.find(v=>/female|feminina|maria|luciana|francisca|camila|samantha|victoria|zira|aria|jenny/i.test(v.name))||candidates[0]||null;
+      utterance.onend=()=>play(i+1);
+      utterance.onerror=()=>{if(id===coachSpeechId.current){setCoachSpeaking(false);setCoachPaused(false);setCoachVoiceStatus('Não foi possível concluir a leitura.');}};
+      synth.speak(utterance);
+    }
+    play(0);
+  }
+  function toggleCoachSpeechPause(){
+    const synth=window.speechSynthesis;
+    if(synth.paused){synth.resume();setCoachPaused(false);}
+    else if(synth.speaking){synth.pause();setCoachPaused(true);}
+  }
+
   const recommended=level==='zero'?'fundamentos':goal==='trabalho'?'trabalho':'entrevista';
   const available = exercises.filter(q => (q.area === area || q.area === 'geral') && (q.level === level || q.level === 'zero')).slice(0,3);
   const current = available[index] || available[0];
@@ -438,6 +497,7 @@ export default function App() {
   }
   async function requestCoachFeedback(e){
     e.preventDefault();
+    coachRecognition.current?.stop();stopCoachSpeech();
     setCoachError('');setCoachFeedback(null);
     if(!session?.access_token){setCoachError('Entre na sua conta para experimentar a IA.');return;}
     setCoachBusy(true);
@@ -469,7 +529,7 @@ export default function App() {
     {stage==='home'&&<section className="coach-home"><div><span className="coach-eyebrow">✨ EXPERIÊNCIA EXPERIMENTAL</span><h2>BellaTech AI Coach</h2><p>Treine uma resposta de entrevista em inglês e receba sugestões personalizadas com IA.</p></div><button type="button" onClick={()=>{setStage('ai-coach');window.scrollTo({top:0,behavior:'smooth'});}}>✨ Experimentar IA</button></section>}
     {stage!=='home' && <div className="journey-navigation"><div className="journey-navigation-actions"><button type="button" className="secondary" onClick={goToPreviousPage} disabled={previousStages.current.length===0}>← Página anterior</button><button type="button" className="secondary" onClick={goHome}>⌂ Voltar ao início</button></div><span>Ambiente de aprendizagem BellaTech</span></div>}
     {stage!=='home' && <section id="disciplina" className="panel" aria-label="Disciplina de inglês para entrevistas">
-      {stage==='ai-coach'&&<section className="coach-panel"><span className="coach-eyebrow">✨ BELLA TECH AI COACH • EXPERIMENTAL</span><h2>Pratique uma entrevista em inglês</h2><p>Responda à pergunta abaixo. A IA oferecerá orientações de linguagem, não uma avaliação profissional.</p><div className="coach-question"><strong>Tell me about yourself.</strong><span>Fale um pouco sobre você e seus interesses profissionais.</span></div>{!session?<div className="coach-login"><p>Entre na sua conta para testar a IA. A jornada de aprendizagem continua disponível sem login.</p><button type="button" onClick={()=>{setAuthMode('login');setAuthOpen(true);}}>Entrar ou criar conta</button></div>:<form onSubmit={requestCoachFeedback}><label htmlFor="coach-answer">Sua resposta em inglês</label><textarea id="coach-answer" rows={5} maxLength={900} minLength={12} value={coachAnswer} onChange={e=>setCoachAnswer(e.target.value)} placeholder="I work with technology and I want to develop my skills..." required/><p className="coach-note">Evite compartilhar dados pessoais. O texto será enviado ao serviço de IA para gerar o feedback e não será salvo pela BellaTech.</p><button type="submit" disabled={coachBusy||coachAnswer.trim().length<12}>{coachBusy?'Analisando resposta...':'✨ Receber feedback com IA'}</button></form>}{coachError&&<p className="auth-error" role="alert">{coachError}</p>}{coachFeedback&&<div className="coach-feedback" aria-live="polite"><h3>Seu feedback personalizado</h3><div><strong>✓ Ponto positivo</strong><p>{coachFeedback.positivo}</p></div><div><strong>✦ O que melhorar</strong><p>{coachFeedback.melhoria}</p></div><div><strong>✧ Exemplo em inglês</strong><p>{coachFeedback.exemplo}</p></div><small>Feedback automatizado experimental; pode conter erros. Não representa avaliação de proficiência.</small></div>}</section>}
+      {stage==='ai-coach'&&<section className="coach-panel"><span className="coach-eyebrow">✨ BELLA TECH AI COACH • EXPERIMENTAL</span><h2>Pratique uma entrevista em inglês</h2><p>Responda à pergunta abaixo. A IA oferecerá orientações de linguagem, não uma avaliação profissional.</p><div className="coach-question"><strong>Tell me about yourself.</strong><span>Fale um pouco sobre você e seus interesses profissionais.</span></div>{!session?<div className="coach-login"><p>Entre na sua conta para testar a IA. A jornada de aprendizagem continua disponível sem login.</p><button type="button" onClick={()=>{setAuthMode('login');setAuthOpen(true);}}>Entrar ou criar conta</button></div>:<form onSubmit={requestCoachFeedback}><label htmlFor="coach-answer">Sua resposta em inglês</label><textarea id="coach-answer" rows={5} maxLength={900} minLength={12} value={coachAnswer} onChange={e=>setCoachAnswer(e.target.value)} placeholder="I work with technology and I want to develop my skills..." required/><div className="coach-voice-controls"><button type="button" className="secondary" aria-pressed={coachListening} onClick={toggleCoachDictation}>{coachListening?"⏹ Parar microfone":"🎙️ Responder por voz"}</button><span>{coachListening?"Ouvindo em inglês…":"Revise a transcrição antes de enviar."}</span></div><p className="coach-note">Evite compartilhar dados pessoais. O texto será enviado ao serviço de IA para gerar o feedback e não será salvo pela BellaTech.</p><button type="submit" disabled={coachBusy||coachAnswer.trim().length<12}>{coachBusy?'Analisando resposta...':'✨ Receber feedback com IA'}</button></form>}{coachVoiceStatus&&<p className="coach-voice-status" role="status">{coachVoiceStatus}</p>}{coachError&&<p className="auth-error" role="alert">{coachError}</p>}{coachFeedback&&<div className="coach-feedback" aria-live="polite"><h3>Seu feedback personalizado</h3><div className="coach-voice-controls"><button type="button" className="secondary" onClick={speakCoachFeedback}>🔊 Ouvir feedback</button>{coachSpeaking&&<><button type="button" className="secondary" onClick={toggleCoachSpeechPause}>{coachPaused?"▶ Continuar":"⏸ Pausar"}</button><button type="button" className="secondary" onClick={stopCoachSpeech}>⏹ Parar</button></>}</div><div><strong>✓ Ponto positivo</strong><p>{coachFeedback.positivo}</p></div><div><strong>✦ O que melhorar</strong><p>{coachFeedback.melhoria}</p></div><div><strong>✧ Exemplo em inglês</strong><p>{coachFeedback.exemplo}</p></div><small>Feedback automatizado experimental; pode conter erros. Não representa avaliação de proficiência.</small></div>}</section>}
       {(stage==='intro'||stage==='paths') && <div className="journey-intro"><p className="eyebrow">INGLÊS PROFISSIONAL</p><h2>Encontre sua trilha</h2><p>Conte seu objetivo e escolha por onde começar. A sugestão é inicial e não representa um teste de proficiência.</p></div>}
       {stage==='intro' && <form onSubmit={e=>{e.preventDefault();setStage('paths')}}>
        <label htmlFor="goal">Objetivo profissional</label><select id="goal" value={goal} onChange={e=>setGoal(e.target.value)}>{Object.entries(goals).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
